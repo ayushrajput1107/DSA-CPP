@@ -1,1 +1,42 @@
+# 2333. Minimum Sum of Squared Difference
 
+### Problem
+Given two integer arrays `nums1` and `nums2`, and two integers `k1` and `k2`, minimize the sum of squared differences between corresponding elements. Each operation allows increasing or decreasing any element of either array by `1`. We can perform at most `k1 + k2` operations.
+
+### Approach
+- Calculate the absolute difference between corresponding elements and store their frequencies in a frequency array.
+- Use `K = k1 + k2` as the total number of available operations.
+- Traverse differences from largest to smallest, reducing the largest differences first.
+- Move reduced frequencies from `count[i]` to `count[i-1]` until operations are exhausted.
+- Calculate the final sum of squared differences using the updated frequencies.
+
+### Code
+```cpp
+class Solution {
+public:
+    long long minSumSquareDiff(vector<int>& nums1, vector<int>& nums2, int k1, int k2) {
+        vector<long long> count(100001, 0);
+
+        for (int i = 0; i < nums1.size(); i++) {
+            long long d = abs(nums1[i] - nums2[i]);
+            count[d]++;
+        }
+
+        long long K = (long long)k1 + k2;
+
+        for (int i = 100000; i > 0 && K > 0; i--) {
+            long long mini = min(count[i], K);
+            count[i] -= mini;
+            count[i - 1] += mini;
+            K -= mini;
+        }
+
+        long long ans = 0;
+        for (int i = 1; i <= 100000; i++) {
+            ans += count[i] * i * i;
+        }
+
+        return ans;
+    }
+};
+```
