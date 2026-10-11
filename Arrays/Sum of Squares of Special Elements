@@ -1,0 +1,30 @@
+# 2778. Sum of Squares of Special Elements
+
+### Problem
+Given an integer array `nums` of length `n`, an element is considered special if its 1-based index divides `n` evenly. Calculate and return the sum of squares of all special elements.
+
+### Approach
+- Find the size `n` of the array and initialize `sum = 0`.
+- Traverse the array using a loop from index `0` to `n-1`.
+- Check whether `n` is divisible by the 1-based index `i + 1`.
+- If divisible, add the square of `nums[i]` to `sum`.
+- Return the final sum.
+
+### Code
+```cpp
+class Solution {
+public:
+    int sumOfSquares(vector<int>& nums) {
+        int n = nums.size();
+        int sum = 0;
+
+        for (int i = 0; i < n; i++) {
+            if (n % (i + 1) == 0) {
+                sum += nums[i] * nums[i];
+            }
+        }
+
+        return sum;
+    }
+};
+```
