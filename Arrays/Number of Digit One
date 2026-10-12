@@ -1,0 +1,74 @@
+# 233. Number of Digit One
+
+**LeetCode Problem:** [233. Number of Digit One](https://leetcode.com/problems/number-of-digit-one/)
+
+**Difficulty:** Hard
+
+## 💡 Approach: Digit DP
+
+### Intuition
+The goal is to count the total number of times digit `1` appears in all integers from `0` to `n`.
+
+We use Digit DP to generate numbers digit by digit while tracking:
+
+- **`idx`**: Current digit position.
+- **`tight`**: Whether the digits chosen so far match the prefix of `n`. If true, the current digit cannot exceed the corresponding digit in `n`.
+- **`count_of_1`**: Number of digit `1`s encountered so far.
+
+At every position, we try all valid digits from `0` to the upper bound. Whenever the chosen digit is `1`, we increment `count_of_1`.
+
+When we reach the end of the number, we return the count of ones in that number. Memoization avoids recomputing identical states.
+
+## 💻 C++ Solution
+
+```cpp
+class Solution {
+public:
+    int dp[10][2][10];
+
+    int solve(string& s, int idx, bool tight, int count_of_1) {
+        if (idx == s.length())
+            return count_of_1;
+
+        if (dp[idx][tight][count_of_1] != -1)
+            return dp[idx][tight][count_of_1];
+
+        int lb = 0;
+        int ub = tight ? s[idx] - '0' : 9;
+        int res = 0;
+
+        for (int dig = lb; dig <= ub; dig++) {
+            res += solve(
+                s,
+                idx + 1,
+                tight && (dig == ub),
+                count_of_1 + (dig == 1)
+            );
+        }
+
+        return dp[idx][tight][count_of_1] = res;
+    }
+
+    int countDigitOne(int n) {
+        memset(dp, -1, sizeof(dp));
+        string s = to_string(n);
+        return solve(s, 0, 1, 0);
+    }
+};
+```
+
+## ⏱️ Complexity Analysis
+
+Let \(d\) be the number of digits in \(n\).
+
+- **Time Complexity:** \(O(d^2 \times 10)\), since there are \(O(d^2)\) combinations of position and count, with two tight states and at most 10 transitions per state.
+- **Space Complexity:** \(O(d^2)\) for the memoization table in a generalized implementation.
+
+For this problem, \(d \leq 10\), so the fixed-size DP table uses constant space.
+
+## 🔑 Key Concepts
+- Digit Dynamic Programming
+- Memoization
+- Tight Constraint
+- State Tracking
+
