@@ -1,0 +1,54 @@
+# First Missing Positive
+
+**LeetCode Problem:** [First Missing Positive](https://leetcode.com/problems/first-missing-positive/)
+
+## Approach: In-Place Index Marking
+
+### Intuition
+The smallest missing positive integer must lie in the range \([1, n+1]\), where \(n\) is the size of the array.
+
+1. **Normalize the array:** Replace all non-positive numbers with `1`, since we are only interested in positive integers.
+2. **Check for `1`:** If `1` is absent, return `1` immediately.
+3. **Mark present numbers:** For every element, take its absolute value. If it lies in the range `[1, n]`, mark the corresponding index `val - 1` as negative.
+4. **Find the missing number:** The first index containing a positive value represents the smallest missing positive integer.
+5. **Handle the remaining case:** If every index is marked, return `n + 1`.
+
+### C++ Solution
+
+```cpp
+class Solution {
+public:
+    int firstMissingPositive(vector<int>& nums) {
+        int found = false;
+        int n = nums.size();
+
+        for (int i = 0; i < n; i++) {
+            if (nums[i] == 1) found = true;
+            if (nums[i] <= 0) nums[i] = 1;
+        }
+
+        if (!found) return 1;
+
+        for (int i = 0; i < n; i++) {
+            int val = abs(nums[i]);
+
+            if (val <= n)
+                nums[val - 1] = -abs(nums[val - 1]);
+        }
+
+        for (int i = 0; i < n; i++) {
+            if (nums[i] > 0) return i + 1;
+        }
+
+        return n + 1;
+    }
+};
+```
+
+### Complexity Analysis
+
+- **Time Complexity:** \(O(n)\) — the algorithm traverses the array a constant number of times.
+- **Auxiliary Space Complexity:** \(O(1)\) — the array is modified in place without using any additional data structure.
+
+### Key Takeaway
+This solution uses **index-based marking** to track the presence of positive integers without extra space, achieving the optimal \(O(n)\) time and \(O(1)\) auxiliary space complexity.
