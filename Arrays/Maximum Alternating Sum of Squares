@@ -1,0 +1,53 @@
+# Maximum Alternating Sum of Squares
+
+**LeetCode Problem:** [Maximum Alternating Sum of Squares](https://leetcode.com/problems/maximum-alternating-sum-of-squares/)
+
+## Approach: Greedy + Sorting
+
+### Intuition
+- Take the absolute value of every element because squaring removes the sign.
+- Sort the array in ascending order.
+- To maximize the alternating sum, assign the largest `ceil(n/2)` elements to the positive group and the remaining elements to the negative group.
+- Calculate the sum of squares of both groups and return their difference.
+
+### C++ Solution
+
+```cpp
+class Solution {
+public:
+    long long maxAlternatingSum(vector<int>& nums) {
+        int n = nums.size();
+
+        for (int i = 0; i < n; i++) {
+            nums[i] = abs(nums[i]);
+        }
+
+        sort(nums.begin(), nums.end());
+
+        int pivot = (n % 2 == 0) ? n / 2 : (n / 2) + 1;
+
+        int i = n - 1, count = 0;
+        long long neg_sum = 0, pos_sum = 0;
+
+        for (i; i >= 0; i--) {
+            if (count >= pivot) break;
+
+            pos_sum += 1LL * nums[i] * nums[i];
+            count++;
+        }
+
+        for (; i >= 0; i--) {
+            neg_sum += 1LL * nums[i] * nums[i];
+        }
+
+        return pos_sum - neg_sum;
+    }
+};
+```
+
+### Complexity Analysis
+- **Time Complexity:** `O(n log n)` — sorting the array dominates.
+- **Space Complexity:** `O(1)` auxiliary space, excluding the sorting implementation.
+
+### Key Takeaway
+Sorting allows us to place larger squared values in the positive group and smaller squared values in the negative group to maximize the alternating sum.
