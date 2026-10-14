@@ -1,0 +1,66 @@
+# Binary Tree Maximum Path Sum
+
+**LeetCode Problem:** [124. Binary Tree Maximum Path Sum](https://leetcode.com/problems/binary-tree-maximum-path-sum/)
+
+## Approach: Recursive DFS (Postorder Traversal)
+
+### Intuition
+The goal is to find the maximum sum of any non-empty path in a binary tree. A path can start and end at any nodes, but it must follow parent-child connections without revisiting nodes.
+
+We use postorder DFS to calculate the maximum path contribution from each node.
+
+### Algorithm
+1. If the current node is `nullptr`, return `0`.
+2. Recursively calculate the maximum contributions from the left and right subtrees.
+3. Ignore negative contributions using `max(0, ...)`, since including a negative path would decrease the sum.
+4. Calculate the maximum path sum passing through the current node:
+
+   `left + right + root->val`
+
+5. Update the global answer with this sum.
+6. Return the maximum one-sided path contribution to the parent:
+
+   `root->val + max(left, right)`
+
+A path returned to the parent can extend through only one child; otherwise, it would create a branching path that cannot be extended as a single valid path.
+
+## C++ Solution
+
+```cpp
+class Solution {
+public:
+    int solve(TreeNode* root, int& ans) {
+        if (!root) return 0;
+
+        int left = max(0, solve(root->left, ans));
+        int right = max(0, solve(root->right, ans));
+
+        int sum = left + right + root->val;
+        ans = max(ans, sum);
+
+        return max(left + root->val, right + root->val);
+    }
+
+    int maxPathSum(TreeNode* root) {
+        if (!root) return 0;
+
+        int ans = INT_MIN;
+        solve(root, ans);
+
+        return ans;
+    }
+};
+```
+
+## Complexity Analysis
+
+- **Time Complexity:** \(O(n)\), because each node is visited exactly once.
+- **Auxiliary Space Complexity:** \(O(h)\), where \(h\) is the height of the tree, due to the recursive call stack. In the worst case of a skewed tree, this becomes \(O(n)\).
+
+## Key Takeaway
+The main insight is to distinguish between two values:
+
+- **Maximum path through a node:** Includes contributions from both children and updates the global answer.
+- **Maximum path returned to the parent:** Includes only one child, allowing the path to continue upward.
+
+Ignoring negative subtree contributions ensures that only beneficial paths are included.
