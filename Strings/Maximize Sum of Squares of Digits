@@ -1,0 +1,42 @@
+# Maximize Sum of Squares of Digits
+
+**LeetCode Problem:** [Maximize Sum of Squares of Digits](https://leetcode.com/problems/maximize-sum-of-squares-of-digits/)
+
+## Approach: Greedy
+
+The goal is to construct the largest possible digit sum of squares using exactly `num` digits whose sum equals `sum`.
+
+### Algorithm
+1. Check whether the required digit sum is feasible: \(1 \leq sum \leq 9 \times num\).
+2. Initialize an empty string `res` to store the answer.
+3. For each digit, choose the maximum possible value using `min(9, sum)`.
+4. Append the chosen digit to `res` and subtract it from `sum`.
+5. Return the resulting string.
+
+### C++ Solution
+
+```cpp
+class Solution {
+public:
+    string maxSumOfSquares(int num, int sum) {
+        string res = "";
+
+        if (1 <= sum && sum <= 9 * num) {
+            while (num--) {
+                int mini = min(9, sum);
+                res += to_string(mini);
+                sum -= mini;
+            }
+        }
+
+        return res;
+    }
+};
+```
+
+### Complexity Analysis
+- **Time Complexity:** \(O(num)\), as each digit is processed once.
+- **Space Complexity:** \(O(num)\), to store the resulting string.
+
+### Key Takeaway
+The greedy strategy places as many `9`s as possible from left to right, followed by the remaining sum and zeros. This constructs the largest number with the required digit sum.
