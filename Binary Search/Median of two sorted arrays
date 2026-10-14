@@ -1,0 +1,174 @@
+# Median of Two Sorted Arrays
+
+**LeetCode:** [4. Median of Two Sorted Arrays](https://leetcode.com/problems/median-of-two-sorted-arrays/)
+
+## Approach 1: Two Pointers (Merge Without Extra Array)
+
+### Intuition
+Since both arrays are already sorted, we can use two pointers to traverse them in sorted order without creating a merged array. We only need to process elements until we reach the middle position.
+
+- Maintain pointers `i` and `j` for the two arrays.
+- Select the smaller available element at each step.
+- Track the previous and current elements using `left` and `right`.
+- If the combined length is even, return their average; otherwise, return the middle element.
+
+### C++ Solution
+
+```cpp
+class Solution {
+public:
+    double findMedianSortedArrays(vector<int>& nums1, vector<int>& nums2) {
+        int n1 = nums1.size(), n2 = nums2.size();
+
+        if (n1 == 0) {
+            int mid = n2 / 2;
+            if (n2 % 2 == 0)
+                return ((long long)nums2[mid - 1] + nums2[mid]) / 2.0;
+            return (double)nums2[mid];
+        }
+
+        if (n2 == 0) {
+            int mid = n1 / 2;
+            if (n1 % 2 == 0)
+                return ((long long)nums1[mid - 1] + nums1[mid]) / 2.0;
+            return (double)nums1[mid];
+        }
+
+        if ((n1 + n2) % 2 == 0) {
+            int mid1 = (n1 + n2) / 2;
+            int mid2 = mid1 + 1;
+            int count = 0, num1 = -1, num2 = -1, i = 0, j = 0;
+
+            while (count < mid2) {
+                if (i < n1 && (j >= n2 || nums1[i] <= nums2[j])) {
+                    count++;
+                    if (count == mid1) num1 = nums1[i];
+                    if (count == mid2) num2 = nums1[i];
+                    i++;
+                } else {
+                    count++;
+                    if (count == mid1) num1 = nums2[j];
+                    if (count == mid2) num2 = nums2[j];
+                    j++;
+                }
+            }
+
+            return ((long long)num1 + num2) / 2.0;
+        } else {
+            int mid = (n1 + n2) / 2 + 1;
+            int count = 0, i = 0, j = 0;
+
+            while (count < mid) {
+                if (i < n1 && (j >= n2 || nums1[i] <= nums2[j])) {
+                    count++;
+                    if (count == mid) return (double)nums1[i];
+                    i++;
+                } else {
+                    count++;
+                    if (count == mid) return (double)nums2[j];
+                    j++;
+                }
+            }
+        }
+
+        return 0.0;
+    }
+};
+```
+
+### Complexity Analysis
+- **Time Complexity:** \(O(n+m)\), because at most half of the combined elements are processed.
+- **Auxiliary Space Complexity:** \(O(1)\), because no merged array is created.
+
+---
+
+## Approach 2: Binary Search on Partitions (Optimal)
+
+### Intuition
+Instead of traversing the arrays, we use binary search on the smaller array to find a valid partition.
+
+A valid partition satisfies two conditions:
+
+1. Every element on the left side is less than or equal to every element on the right side.
+2. The left half contains the same number of elements as the right half, or one extra element when the total length is odd.
+
+Let `PartitionX` and `PartitionY` represent the partition positions in the smaller and larger arrays.
+
+We compare the four boundary elements:
+
+- `l1`: last element on the left of the smaller array.
+- `r1`: first element on the right of the smaller array.
+- `l2`: last element on the left of the larger array.
+- `r2`: first element on the right of the larger array.
+
+A valid partition is found when:
+
+\[
+l_1 \leq r_2 \quad \text{and} \quad l_2 \leq r_1
+\]
+
+If the total length is odd, the median is the maximum of the two left boundary elements. Otherwise, it is the average of that maximum and the minimum of the two right boundary elements.
+
+### C++ Solution
+
+```cpp
+class Solution {
+public:
+    double findMedianSortedArrays(vector<int>& nums1, vector<int>& nums2) {
+        const vector<int>& smaller =
+            (nums1.size() > nums2.size()) ? nums2 : nums1;
+        const vector<int>& larger =
+            (nums1.size() > nums2.size()) ? nums1 : nums2;
+
+        int low = 0, high = smaller.size();
+        int total_length = nums1.size() + nums2.size();
+
+        while (low <= high) {
+            int PartitionX = low + (high - low) / 2;
+            int PartitionY = (total_length + 1) / 2 - PartitionX;
+
+            int l1 = (PartitionX == 0)
+                         ? INT_MIN : smaller[PartitionX - 1];
+            int l2 = (PartitionY == 0)
+                         ? INT_MIN : larger[PartitionY - 1];
+
+            int r1 = (PartitionX == smaller.size())
+                         ? INT_MAX : smaller[PartitionX];
+            int r2 = (PartitionY == larger.size())
+                         ? INT_MAX : larger[PartitionY];
+
+            if (l1 <= r2 && l2 <= r1) {
+                if (total_length % 2 != 0)
+                    return max(l1, l2);
+
+                return (max(l1, l2) + (double)min(r1, r2)) / 2.0;
+            }
+
+            if (l1 > r2)
+                high = PartitionX - 1;
+            else
+                low = PartitionX + 1;
+        }
+
+        return 0.0;
+    }
+};
+```
+
+### Complexity Analysis
+- **Time Complexity:** \(O(\log(\min(n,m)))\), because binary search is performed on the smaller array.
+- **Auxiliary Space Complexity:** \(O(1)\), because references are used instead of copying the arrays.
+
+---
+
+## Comparison of Both Approaches
+
+| Feature | Two Pointers | Binary Search |
+|---|---|---|
+| Time complexity | \(O(n+m)\) | \(O(\log(\min(n,m)))\) |
+| Auxiliary space | \(O(1)\) | \(O(1)\) |
+| Technique | Sorted traversal | Binary search and partitioning |
+| Optimal solution | No | Yes |
+
+### Key Takeaway
+The two-pointer approach is easier to understand and is useful for learning how sorted arrays can be traversed efficiently. The binary-search partition approach is the optimal solution for this problem because it avoids traversing the elements and achieves logarithmic time complexity.
