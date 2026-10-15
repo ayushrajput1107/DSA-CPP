@@ -1,0 +1,35 @@
+# LeetCode 493: Reverse Pairs
+
+## Problem Statement
+Given an integer array `nums`, return the number of reverse pairs in the array.
+
+A pair of indices `(i, j)` is called a reverse pair if:
+
+- `0 <= i < j < nums.size()`
+- `nums[i] > 2 * nums[j]`
+
+## Approach: Merge Sort
+
+The solution uses **Merge Sort with a modified merge step** to count reverse pairs efficiently.
+
+### Algorithm
+1. Divide the array into two halves recursively.
+2. Count reverse pairs within the left and right halves.
+3. Count cross-half reverse pairs before merging:
+   - For each element in the left half, find the number of elements in the sorted right half satisfying `nums[i] > 2 * nums[j]`.
+   - Use a pointer that moves only forward because both halves are sorted.
+4. Merge the two sorted halves into a temporary array.
+5. Return the total count.
+
+### Complexity Analysis
+- **Time Complexity:** `O(n log n)` — Merge sort performs `O(log n)` levels, with linear work at each level.
+- **Auxiliary Space Complexity:** `O(n)` — Temporary arrays are used during merging.
+
+## Key Learning
+- Divide and conquer
+- Merge sort
+- Counting pairs across sorted subarrays
+- Using `2LL * nums[j]` to avoid integer overflow
+
+## LeetCode
+[493. Reverse Pairs](https://leetcode.com/problems/reverse-pairs/)
