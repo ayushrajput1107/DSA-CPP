@@ -1,0 +1,57 @@
+# LeetCode 2913: Subarrays Distinct Element Sum of Squares I
+
+## Problem Statement
+Given an integer array `nums`, consider every possible subarray. For each subarray, calculate the number of distinct elements and square that count. Return the sum of these squared values.
+
+## Approach: Brute Force + Hash Set
+
+- Traverse every possible starting index `i` of a subarray.
+- Create an `unordered_set` to store distinct elements for each starting index.
+- Extend the subarray using index `j`.
+- If `nums[j]` is not already present in the set, insert it and increment the distinct element count.
+- Add the square of the distinct element count to the total sum for every subarray.
+- Return the final sum.
+
+## C++ Solution
+
+```cpp
+class Solution {
+public:
+    int sumCounts(vector<int>& nums) {
+        int Total_count = 0;
+
+        for (int i = 0; i < nums.size(); i++) {
+            unordered_set<int> st;
+            int count = 0;
+
+            for (int j = i; j < nums.size(); j++) {
+                if (!st.count(nums[j])) {
+                    count++;
+                    st.insert(nums[j]);
+                }
+
+                Total_count += count * count;
+            }
+        }
+
+        return Total_count;
+    }
+};
+```
+
+## Complexity Analysis
+
+- **Time Complexity:** `O(n²)` expected, assuming average constant-time hash set operations.
+- **Space Complexity:** `O(n)` for the hash set.
+
+Here, `n` is the size of the input array.
+
+## Key Concepts
+- Arrays and subarrays
+- Nested loops
+- `unordered_set` in C++
+- Counting distinct elements
+- Brute-force enumeration
+
+## Key Learning
+By fixing the starting index and extending the subarray one element at a time, we can efficiently maintain the distinct element count without recalculating it for every subarray.
