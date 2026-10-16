@@ -1,0 +1,89 @@
+# LeetCode 303: Range Sum Query – Immutable
+
+## Approach: Segment Tree
+
+### Problem Statement
+Given an integer array `nums`, handle multiple queries to calculate the sum of elements between indices `left` and `right`, inclusive.
+
+### Algorithm
+1. **Build the Segment Tree:** Recursively divide the array into two halves until each leaf node represents a single element.
+2. **Store range sums:** Each internal node stores the sum of its left and right child nodes.
+3. **Process queries:** Use three cases:
+   - **No overlap:** Return `0`.
+   - **Complete overlap:** Return the sum stored at the current node.
+   - **Partial overlap:** Recursively query both children and return their sum.
+
+### C++ Solution
+
+```cpp
+class NumArray {
+    int n;
+    vector<int> segmentTree;
+
+    void buildTree(vector<int>& nums, int index, int low, int high) {
+        if (low == high) {
+            segmentTree[index] = nums[low];
+            return;
+        }
+
+        int mid = low + (high - low) / 2;
+
+        buildTree(nums, 2 * index + 1, low, mid);
+        buildTree(nums, 2 * index + 2, mid + 1, high);
+
+        segmentTree[index] =
+            segmentTree[2 * index + 1] +
+            segmentTree[2 * index + 2];
+    }
+
+    int query(int index, int low, int high, int left, int right) {
+        // No overlap
+        if (high < left || right < low)
+            return 0;
+
+        // Complete overlap
+        if (left <= low && high <= right)
+            return segmentTree[index];
+
+        // Partial overlap
+        int mid = low + (high - low) / 2;
+
+        int leftSum = query(2 * index + 1, low, mid, left, right);
+        int rightSum = query(2 * index + 2, mid + 1, high, left, right);
+
+        return leftSum + rightSum;
+    }
+
+public:
+    NumArray(vector<int>& nums) {
+        n = nums.size();
+        segmentTree.resize(4 * n, 0);
+
+        if (n > 0)
+            buildTree(nums, 0, 0, n - 1);
+    }
+
+    int sumRange(int left, int right) {
+        if (n == 0)
+            return 0;
+
+        return query(0, 0, n - 1, left, right);
+    }
+};
+```
+
+### Complexity Analysis
+- **Time Complexity:**
+  - Building the tree: `O(n)`
+  - Each range sum query: `O(log n)`
+- **Space Complexity:** `O(n)` for the Segment Tree, with `O(log n)` recursive stack space.
+
+### Key Concepts
+- Segment Tree
+- Recursion
+- Range queries
+- Divide and conquer
+- Overlap conditions
+
+### Note
+Since the array is immutable, no update operation is required. A Segment Tree supports efficient range queries, although a prefix-sum array is a simpler alternative for this particular problem.
