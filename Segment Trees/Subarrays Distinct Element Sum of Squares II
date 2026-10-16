@@ -1,0 +1,57 @@
+# 2916. Subarrays Distinct Element Sum of Squares II
+
+**Platform:** LeetCode  
+**Difficulty:** Hard  
+**Topics:** Segment Tree, Lazy Propagation, Prefix Processing, Hashing
+
+## Approach
+
+The goal is to calculate the sum of the squares of the number of distinct elements across all subarrays.
+
+For each index `i`, maintain the distinct-element counts of all subarrays ending at `i`. When processing `nums[i]`, increment the counts for starting positions in the range:
+
+`[lastSeenIdx[nums[i]] + 1, i]`
+
+This ensures that each updated subarray contains the current element exactly once in its distinct-element count.
+
+A segment tree with lazy propagation efficiently performs these range increments while maintaining both the sum of the counts and the sum of their squares.
+
+## Key Formula
+
+If every value in a segment increases by `x`, then:
+
+\[
+(a+x)^2=a^2+2ax+x^2
+\]
+
+For a segment of length `L`, the updated sum of squares is:
+
+\[
+S_2'=S_2+2xS_1+Lx^2
+\]
+
+Where:
+- `S1` is the original sum of values in the segment.
+- `S2` is the original sum of squares.
+- `L` is the segment length.
+
+## Algorithm
+
+1. Initialize segment trees for sums, squared sums, and lazy updates.
+2. Maintain a `lastSeenIdx` array to track the previous occurrence of each element.
+3. For each index `i`, calculate the range of subarrays whose distinct counts must increase.
+4. Apply a range increment using lazy propagation.
+5. Add the root's sum of squares to the result modulo `10^9 + 7`.
+6. Update the last-seen index of the current element.
+
+## Complexity Analysis
+
+- **Time Complexity:** `O(n log n)` — each element requires one segment-tree range update.
+- **Space Complexity:** `O(n + M)` — segment trees require `O(n)` space, and the last-seen array requires `O(M)` space, where `M` is the size of the supported value range.
+
+## Key Learnings
+
+- Applying lazy propagation to range-update problems.
+- Maintaining both a segment sum and a sum of squares.
+- Using the last occurrence of an element to avoid duplicate counting.
+- Optimizing subarray calculations from quadratic time to `O(n log n)`.
