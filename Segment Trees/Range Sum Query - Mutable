@@ -1,0 +1,123 @@
+# LeetCode 307: Range Sum Query – Mutable
+
+## Approach: Segment Tree
+
+### Problem Statement
+Given an integer array `nums`, support two operations:
+
+- **Update:** Update the element at a given index to a new value.
+- **Sum Range:** Return the sum of elements between indices `left` and `right`, inclusive.
+
+### Algorithm
+
+1. **Build the Segment Tree:** Recursively divide the array into two halves until each leaf node represents one element.
+2. **Store range sums:** Each internal node stores the sum of its left and right child nodes.
+3. **Update an element:** Traverse the tree to the target index, update the leaf, and recalculate the sums of its ancestors.
+4. **Query a range:** Use three overlap cases:
+   - **No overlap:** Return `0`.
+   - **Complete overlap:** Return the stored segment sum.
+   - **Partial overlap:** Query both children and add their results.
+
+### C++ Solution
+
+```cpp
+class NumArray {
+    int n;
+    vector<int> SegmentTree;
+
+    void buildTree(vector<int>& nums, int index, int low, int high) {
+        if (low == high) {
+            SegmentTree[index] = nums[low];
+            return;
+        }
+
+        int mid = low + (high - low) / 2;
+
+        buildTree(nums, 2 * index + 1, low, mid);
+        buildTree(nums, 2 * index + 2, mid + 1, high);
+
+        SegmentTree[index] =
+            SegmentTree[2 * index + 1] +
+            SegmentTree[2 * index + 2];
+    }
+
+    int query(int index, int low, int high, int left, int right) {
+        // No overlap
+        if (high < left || right < low)
+            return 0;
+
+        // Complete overlap
+        if (left <= low && high <= right)
+            return SegmentTree[index];
+
+        // Partial overlap
+        int mid = low + (high - low) / 2;
+
+        int lsum = query(2 * index + 1, low, mid, left, right);
+        int rsum = query(2 * index + 2, mid + 1, high, left, right);
+
+        return lsum + rsum;
+    }
+
+    void update(int pivot, int index, int low, int high, int val) {
+        if (low == high) {
+            SegmentTree[index] = val;
+            return;
+        }
+
+        int mid = low + (high - low) / 2;
+
+        if (pivot <= mid)
+            update(pivot, 2 * index + 1, low, mid, val);
+        else
+            update(pivot, 2 * index + 2, mid + 1, high, val);
+
+        SegmentTree[index] =
+            SegmentTree[2 * index + 1] +
+            SegmentTree[2 * index + 2];
+    }
+
+public:
+    NumArray(vector<int>& nums) {
+        n = nums.size();
+        SegmentTree.resize(4 * n);
+
+        if (n > 0)
+            buildTree(nums, 0, 0, n - 1);
+    }
+
+    void update(int index, int val) {
+        if (n == 0)
+            return;
+
+        update(index, 0, 0, n - 1, val);
+    }
+
+    int sumRange(int left, int right) {
+        if (n == 0)
+            return 0;
+
+        return query(0, 0, n - 1, left, right);
+    }
+};
+```
+
+### Complexity Analysis
+
+| Operation | Time Complexity |
+|---|---|
+| Build Segment Tree | `O(n)` |
+| Update an element | `O(log n)` |
+| Range sum query | `O(log n)` |
+| Space Complexity | `O(n)` |
+
+### Key Concepts
+- Segment Tree
+- Recursion
+- Divide and conquer
+- Point updates
+- Range sum queries
+- Tree traversal
+
+### Important Observation
+When updating an element, only the nodes along the path from the root to the target leaf need to be recalculated. This is why an update takes `O(log n)` time rather than rebuilding the entire tree.
