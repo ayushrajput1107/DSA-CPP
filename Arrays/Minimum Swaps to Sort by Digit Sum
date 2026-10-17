@@ -1,0 +1,27 @@
+# Minimum Swaps to Sort by Digit Sum
+
+**Problem:** [LeetCode – Minimum Swaps to Sort by Digit Sum](https://leetcode.com/problems/minimum-swaps-to-sort-by-digit-sum/)
+
+## Approach: Custom Comparator + Index Mapping
+
+### Intuition
+The goal is to sort the array according to the sum of digits of each number in increasing order. If two numbers have the same digit sum, the smaller number comes first.
+
+After sorting, we need to determine the minimum number of swaps required to arrange the original array in the desired order.
+
+### Algorithm
+1. **Calculate Digit Sum:** Create a helper function `findSum()` that calculates the sum of the digits of a number.
+2. **Custom Comparator:** Use `cmp()` to compare numbers by digit sum, breaking ties using their numerical values.
+3. **Sort the Array:** Create a sorted copy of the original array using the custom comparator.
+4. **Index Mapping:** Store each number's original index in an `unordered_map`.
+5. **Count Swaps:** Traverse the sorted array, find the original index of each element, and swap elements when their positions differ. Update the index mapping after each swap.
+
+### Complexity Analysis
+- **Time Complexity:** \(O(n \log n \cdot d)\), where \(n\) is the array size and \(d\) is the maximum number of digits in an element.
+- **Space Complexity:** \(O(n)\) for the copied array and index mapping.
+
+### Key Concepts
+- Custom sorting with comparators
+- Digit manipulation
+- Hash maps for index tracking
+- Greedy swap counting
