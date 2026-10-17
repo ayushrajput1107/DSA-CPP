@@ -1,0 +1,78 @@
+# Number of Longest Increasing Subsequence
+
+**Problem:** [LeetCode 673 – Number of Longest Increasing Subsequence](https://leetcode.com/problems/number-of-longest-increasing-subsequence/)
+
+## Approach: Dynamic Programming
+
+### Intuition
+The goal is to find the number of longest strictly increasing subsequences in the given array.
+
+We use two DP arrays:
+
+- `dp[i]`: Length of the longest increasing subsequence ending at index `i`.
+- `count[i]`: Number of longest increasing subsequences ending at index `i`.
+
+Initially, every element forms a subsequence of length `1`, so both arrays are initialized with `1`.
+
+### Algorithm
+1. Initialize `dp` and `count` arrays with `1`.
+2. For every current index `curr`, examine all previous indices `prev`.
+3. If `nums[curr] > nums[prev]`, an increasing subsequence can be extended:
+   - **If a longer subsequence is found:** Update `dp[curr]` to `dp[prev] + 1` and set `count[curr] = count[prev]`.
+   - **If another subsequence of the same maximum length is found:** Add `count[prev]` to `count[curr]`.
+4. Track the maximum subsequence length across all indices.
+5. Sum `count[i]` for every index where `dp[i]` equals the maximum length.
+
+The final sum gives the total number of longest increasing subsequences.
+
+## C++ Implementation
+
+```cpp
+class Solution {
+public:
+    int findNumberOfLIS(vector<int>& nums) {
+        int n = nums.size();
+
+        vector<int> dp(n, 1);
+        vector<int> count(n, 1);
+
+        int ans = 1;
+
+        for (int curr = 0; curr < n; curr++) {
+            for (int prev = 0; prev < curr; prev++) {
+                if (nums[curr] > nums[prev]) {
+                    if (dp[prev] + 1 > dp[curr]) {
+                        dp[curr] = dp[prev] + 1;
+                        count[curr] = count[prev];
+                    }
+                    else if (dp[prev] + 1 == dp[curr]) {
+                        count[curr] += count[prev];
+                    }
+                }
+            }
+
+            ans = max(ans, dp[curr]);
+        }
+
+        int result = 0;
+
+        for (int i = 0; i < n; i++) {
+            if (dp[i] == ans) {
+                result += count[i];
+            }
+        }
+
+        return result;
+    }
+};
+```
+
+### Complexity Analysis
+- **Time Complexity:** \(O(n^2)\), because each element is compared with all preceding elements.
+- **Space Complexity:** \(O(n)\), for the `dp` and `count` arrays.
+
+### Key Concepts
+- Dynamic Programming
+- Longest Increasing Subsequence (LIS)
+- Counting optimal subsequences
+- State transitions and optimal substructure
