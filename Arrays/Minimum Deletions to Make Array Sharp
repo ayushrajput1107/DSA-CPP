@@ -1,0 +1,42 @@
+# Minimum Deletions to Make Array Sharp
+
+## Approach: Greedy
+
+### Theory
+We traverse the array and compare the current element with the previously selected element using the XOR operator.
+
+- If `nums[prev] ^ nums[index] == 0`, both elements are equal. We count a deletion and move to the next element.
+- Otherwise, we keep the current element and update `prev` to its index.
+- We repeat this process until all elements have been processed.
+
+Since XOR of two equal numbers is zero, the condition helps identify duplicate values relative to the previously selected element.
+
+## Code
+
+```cpp
+class Solution {
+public:
+    int minDeletions(vector<int>& nums) {
+        int n = nums.size();
+        int index = 1;
+        int prev = 0, count = 0;
+
+        while (index < n) {
+            while (index < n && (nums[prev] ^ nums[index]) == 0) {
+                count++;
+                index++;
+            }
+
+            prev = index;
+            index++;
+        }
+
+        return count;
+    }
+};
+```
+
+## Complexity Analysis
+
+- **Time Complexity:** \(O(n)\), where \(n\) is the size of the array.
+- **Space Complexity:** \(O(1)\), as the algorithm uses only a constant amount of extra space.
