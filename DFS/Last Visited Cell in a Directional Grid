@@ -1,0 +1,68 @@
+# Last Visited Cell in a Directional Grid
+
+## Approach: DFS / Simulation
+
+### Theory
+We start from cell `(0, 0)` and follow the direction specified by each cell in the grid.
+
+- Use a hash map to store the movement associated with each direction: `U`, `D`, `L`, and `R`.
+- Maintain a visited matrix to mark cells that have already been visited.
+- At each step, calculate the next cell using the current cell's coordinates and its corresponding direction.
+- If the next cell goes outside the grid or reaches an already visited cell, stop the traversal.
+- Store the coordinates of the last valid cell visited and return them.
+
+The recursive function carries the previous cell's coordinates so that when traversal stops, the last valid position can be returned.
+
+## Code
+
+```cpp
+class Solution {
+public:
+    int l_row = 0, l_col = 0;
+
+    void solve(vector<vector<char>>& grid,
+               vector<vector<int>>& vis,
+               unordered_map<char, pair<int, int>>& mp,
+               int row, int col, int lr, int lc) {
+
+        if (row < 0 || col < 0 ||
+            row >= grid.size() || col >= grid[0].size() ||
+            vis[row][col] == 1) {
+            l_row = lr;
+            l_col = lc;
+            return;
+        }
+
+        vis[row][col] = 1;
+
+        char ch = grid[row][col];
+        auto it = mp[ch];
+
+        int r = row + it.first;
+        int c = col + it.second;
+
+        solve(grid, vis, mp, r, c, row, col);
+    }
+
+    vector<int> lastVisitedCell(vector<vector<char>>& grid) {
+        unordered_map<char, pair<int, int>> mp = {
+            {'D', {1, 0}},
+            {'R', {0, 1}},
+            {'L', {0, -1}},
+            {'U', {-1, 0}}
+        };
+
+        int row = grid.size(), col = grid[0].size();
+        vector<vector<int>> vis(row, vector<int>(col, 0));
+
+        solve(grid, vis, mp, 0, 0, 0, 0);
+
+        return {l_row, l_col};
+    }
+};
+```
+
+## Complexity Analysis
+
+- **Time Complexity:** \(O(m \times n)\) in the worst case, where \(m\) is the number of rows and \(n\) is the number of columns. Each cell is visited at most once.
+- **Space Complexity:** \(O(m \times n)\) for the visited matrix and the recursive call stack in the worst case.
