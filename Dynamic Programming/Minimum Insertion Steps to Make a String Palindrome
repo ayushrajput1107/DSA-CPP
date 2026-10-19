@@ -1,0 +1,61 @@
+# Minimum Insertion Steps to Make a String Palindrome
+
+**Problem:** [LeetCode 1312 – Minimum Insertion Steps to Make a String Palindrome](https://leetcode.com/problems/minimum-insertion-steps-to-make-a-string-palindrome/)
+
+## Approach: Longest Common Subsequence (LCS)
+
+### Theory
+
+The goal is to find the minimum number of characters that must be inserted into a string to make it a palindrome.
+
+A palindrome reads the same forward and backward. To solve this problem, we reverse the original string and calculate the **Longest Common Subsequence (LCS)** between the original string and its reverse.
+
+The LCS represents the longest palindromic subsequence of the original string. Characters belonging to this subsequence can remain unchanged, while the remaining characters must be matched through insertions.
+
+Therefore, the minimum number of insertions is:
+
+`Minimum Insertions = n - LPS`
+
+where `LPS` is the length of the longest palindromic subsequence, obtained using LCS.
+
+### Code
+
+```cpp
+class Solution {
+public:
+    int minInsertions(string s) {
+        int n = s.length();
+        string s2 = "";
+
+        for (int i = n - 1; i >= 0; i--) {
+            s2 += s[i];
+        }
+
+        vector<vector<int>> dp(n + 1, vector<int>(n + 1, 0));
+
+        for (int i = 1; i <= n; i++) {
+            for (int j = 1; j <= n; j++) {
+                if (s[i - 1] == s2[j - 1]) {
+                    dp[i][j] = 1 + dp[i - 1][j - 1];
+                } else {
+                    dp[i][j] = max(dp[i - 1][j], dp[i][j - 1]);
+                }
+            }
+        }
+
+        return n - dp[n][n];
+    }
+};
+```
+
+## Complexity Analysis
+
+- **Time Complexity:** `O(n²)` — The DP table has `n × n` states, each computed in constant time.
+- **Space Complexity:** `O(n²)` — The DP table stores the LCS values.
+
+## Key Learnings
+
+- Applying the Longest Common Subsequence (LCS) algorithm.
+- Finding the Longest Palindromic Subsequence (LPS) using a reversed string.
+- Converting a palindrome problem into a dynamic programming problem.
+- Using the relationship between string length and LPS length to find the minimum insertions.
