@@ -1,0 +1,50 @@
+# Merge Adjacent Equal Elements
+
+**Problem:** [LeetCode – Merge Adjacent Equal Elements](https://leetcode.com/problems/merge-adjacent-equal-elements/)
+
+## Approach: Stack
+
+### Theory
+We use a vector as a stack to maintain the resulting elements. For each element in the input array, compare it with the last element of the result vector.
+
+- If both elements are equal, remove the last element and double the current element.
+- Continue merging while the last element equals the updated value.
+- If the elements are different, push the current value into the result vector.
+
+This process ensures that adjacent equal elements are merged repeatedly until no further merge is possible.
+
+## Code
+
+```cpp
+class Solution {
+public:
+    vector<long long> mergeAdjacent(vector<int>& nums) {
+        vector<long long> ans;
+
+        for (int num : nums) {
+            long long pivot = num;
+
+            while (!ans.empty() && ans.back() == pivot) {
+                ans.pop_back();
+                pivot *= 2;
+            }
+
+            ans.push_back(pivot);
+        }
+
+        return ans;
+    }
+};
+```
+
+## Complexity Analysis
+
+- **Time Complexity:** \(O(n)\), because each element is pushed into and removed from the stack at most once.
+- **Space Complexity:** \(O(n)\), for storing the resulting elements in the vector.
+
+## Key Learnings
+
+- Using a vector as a stack with `push_back()`, `back()`, and `pop_back()`.
+- Applying greedy merging to adjacent equal elements.
+- Handling cascading merges efficiently.
+- Using `long long` to avoid integer overflow when values are doubled.
