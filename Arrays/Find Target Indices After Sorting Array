@@ -1,0 +1,43 @@
+# Find Target Indices After Sorting Array
+
+**Problem:** [LeetCode 2089 – Find Target Indices After Sorting Array](https://leetcode.com/problems/find-target-indices-after-sorting-array/)
+
+## Approach: Sorting + Binary Search
+
+### Theory
+First, sort the array in ascending order. Then use `lower_bound()` to find the first position where the target can appear and `upper_bound()` to find the first position greater than the target.
+
+All indices between these two positions contain the target, so store them in the result vector and return it.
+
+### Code
+```cpp
+class Solution {
+public:
+    vector<int> targetIndices(vector<int>& nums, int target) {
+        sort(nums.begin(), nums.end());
+
+        vector<int> res;
+
+        int low = lower_bound(nums.begin(), nums.end(), target) - nums.begin();
+        int high = upper_bound(nums.begin(), nums.end(), target) - nums.begin();
+
+        for (int i = low; i < high; i++) {
+            res.push_back(i);
+        }
+
+        return res;
+    }
+};
+```
+
+### Complexity Analysis
+
+- **Time Complexity:** `O(n log n)` — Sorting takes `O(n log n)`, binary searches take `O(log n)`, and collecting the indices takes `O(k)`, where `k` is the number of occurrences of the target.
+- **Auxiliary Space:** `O(1)` excluding sorting-related stack space.
+- **Result Space:** `O(k)` for storing the target indices.
+
+### Key Learnings
+- Using `sort()` to arrange elements in ascending order.
+- Using `lower_bound()` to find the first occurrence position.
+- Using `upper_bound()` to find the position immediately after the last occurrence.
+- Handling duplicate elements efficiently with binary search.
