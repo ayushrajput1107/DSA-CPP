@@ -1,0 +1,68 @@
+# Vertical Order Traversal of a Binary Tree
+
+**Problem:** [LeetCode 987 – Vertical Order Traversal of a Binary Tree](https://leetcode.com/problems/vertical-order-traversal-of-a-binary-tree/)
+
+## Approach: DFS + Ordered Map + Multiset
+
+### Theory
+
+We use Depth-First Search (DFS) to traverse the binary tree and assign each node a coordinate `(row, col)`.
+
+- Moving left decreases the column by 1 and increases the row by 1.
+- Moving right increases the column by 1 and increases the row by 1.
+- An ordered map stores nodes according to their column and row.
+- A multiset stores node values at the same coordinate in ascending order, handling cases where multiple nodes occupy the same position.
+
+Finally, traverse the map in ascending column order, then ascending row order, and append the sorted values to the result.
+
+## Code
+
+```cpp
+class Solution {
+    map<int, map<int, multiset<int>>> nodes;
+
+    void dfs(TreeNode* root, int col, int row) {
+        if (!root) return;
+
+        nodes[col][row].insert(root->val);
+
+        dfs(root->left, col - 1, row + 1);
+        dfs(root->right, col + 1, row + 1);
+    }
+
+public:
+    vector<vector<int>> verticalTraversal(TreeNode* root) {
+        dfs(root, 0, 0);
+
+        vector<vector<int>> ans;
+
+        for (auto& col : nodes) {
+            vector<int> temp;
+
+            for (auto& row : col.second) {
+                temp.insert(temp.end(),
+                            row.second.begin(),
+                            row.second.end());
+            }
+
+            ans.push_back(temp);
+        }
+
+        return ans;
+    }
+};
+```
+
+## Complexity Analysis
+
+Let \(n\) be the number of nodes in the binary tree.
+
+- **Time Complexity:** \(O(n\log n)\) — Each node is inserted into an ordered map and multiset, with logarithmic insertion cost. Building the final result takes \(O(n)\) overall.
+- **Space Complexity:** \(O(n)\) — The maps and multisets store all nodes, and the DFS recursion stack requires up to \(O(h)\) space, where \(h\) is the tree height.
+
+## Key Learnings
+
+- Using nested ordered maps to organize data by multiple coordinates.
+- Using a multiset to sort values at identical positions.
+- Applying DFS to track row and column positions.
+- Understanding the ordering rules for vertical traversal in a binary tree.
