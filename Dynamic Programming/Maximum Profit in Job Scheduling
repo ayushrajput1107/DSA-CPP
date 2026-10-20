@@ -1,0 +1,53 @@
+# Maximum Profit in Job Scheduling
+
+**Problem:** [LeetCode 1235 – Maximum Profit in Job Scheduling](https://leetcode.com/problems/maximum-profit-in-job-scheduling/)
+
+## Approach: Dynamic Programming + Binary Search
+
+### Algorithm
+
+1. Store each job as a tuple containing its start time, end time, and profit.
+2. Sort the jobs by their start times.
+3. For each job, use binary search to find the next compatible job whose start time is greater than or equal to the current job's end time.
+4. Use recursion with memoization to explore two choices:
+   - **Take:** Add the current job's profit and solve for the next compatible job.
+   - **Not Take:** Skip the current job and solve for the next job.
+5. Store the maximum profit from both choices in the DP array to avoid recomputing results.
+
+## C++ Solution
+
+```cpp
+class Solution {
+public:
+    int find_next(vector<tuple<int, int, int>>& jobs, int i) {
+        int target = get<1>(jobs[i]);
+        int low = i + 1, high = jobs.size() - 1;
+        int res = jobs.size();
+
+        while (low <= high) {
+            int mid = low + (high - low) / 2;
+            int curr = get<0>(jobs[mid]);
+
+            if (curr >= target) {
+                res = mid;
+                high = mid - 1;
+            } else {
+                low = mid + 1;
+            }
+        }
+
+        return res;
+    }
+
+    int solve(vector<tuple<int, int, int>>& jobs,
+              int i, vector<int>& dp) {
+        if (i >= jobs.size()) return 0;
+
+        if (dp[i] != -1) return dp[i];
+
+        int next = find_next(jobs, i);
+
+        int take = get<2>(jobs[i]) + solve(jobs, next, dp);
+        int not_take = solve(jobs, i + 1, dp);
+
+        return dp[i
