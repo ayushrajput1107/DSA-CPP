@@ -1,0 +1,65 @@
+# Stone Game III
+
+## Approach: Dynamic Programming (Memoization)
+
+The problem can be solved using recursion with memoization by calculating the maximum score difference between Alice and Bob.
+
+### Algorithm
+
+1. Define `solve(i)` as the maximum score difference the current player can achieve starting from index `i`.
+2. The current player can take one, two, or three stones.
+3. For each choice, add the values of the stones taken and subtract the opponent's optimal score difference from the remaining stones.
+4. Store the result in `dp[i]` to avoid recomputing the same states.
+5. After calculating `solve(0)`:
+   - If the result is positive, Alice wins.
+   - If the result is negative, Bob wins.
+   - If the result is zero, the game is a tie.
+
+## Code
+
+```cpp
+class Solution {
+public:
+    int solve(vector<int>& nums, int i, vector<int>& dp) {
+        if (i >= nums.size()) return 0;
+
+        if (dp[i] != INT_MIN) return dp[i];
+
+        int ans = INT_MIN;
+
+        ans = max(ans, nums[i] - solve(nums, i + 1, dp));
+
+        if (i + 1 < nums.size()) {
+            ans = max(ans, nums[i] + nums[i + 1] -
+                           solve(nums, i + 2, dp));
+        }
+
+        if (i + 2 < nums.size()) {
+            ans = max(ans, nums[i] + nums[i + 1] + nums[i + 2] -
+                           solve(nums, i + 3, dp));
+        }
+
+        return dp[i] = ans;
+    }
+
+    string stoneGameIII(vector<int>& stoneValue) {
+        vector<int> dp(stoneValue.size(), INT_MIN);
+
+        int res = solve(stoneValue, 0, dp);
+
+        if (res > 0) return "Alice";
+        else if (res < 0) return "Bob";
+
+        return "Tie";
+    }
+};
+```
+
+## Complexity Analysis
+
+- **Time Complexity:** \(O(n)\), because each index is computed once and has at most three transitions.
+- **Space Complexity:** \(O(n)\) for the DP array and recursion stack.
+
+## Key Concept
+
+The key idea is to maximize the score difference rather than calculate both players' scores separately. Since both players play optimally, subtracting the opponent's best score difference gives the current player's optimal result.
