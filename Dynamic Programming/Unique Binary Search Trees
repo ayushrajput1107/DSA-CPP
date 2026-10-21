@@ -1,0 +1,55 @@
+# Unique Binary Search Trees
+
+## Approach
+
+We use **Recursion with Memoization (Top-Down Dynamic Programming)** to count the number of structurally unique Binary Search Trees (BSTs) that can be formed using values from `1` to `n`.
+
+For each possible root, the number of unique BSTs is the product of the number of possible left and right subtrees.
+
+\[
+dp[n] = \sum_{i=1}^{n} dp[i-1] \times dp[n-i]
+\]
+
+Here:
+- `i - 1` nodes are available for the left subtree.
+- `n - i` nodes are available for the right subtree.
+- `dp[n]` stores the result to avoid recalculating the same subproblem.
+
+The base cases are `n = 0` and `n = 1`, for which there is exactly one possible BST.
+
+## C++ Code
+
+```cpp
+class Solution {
+public:
+    int dp[20];
+
+    int solve(int n) {
+        if (n <= 1) return 1;
+
+        if (dp[n] != -1) return dp[n];
+
+        int sum = 0;
+
+        for (int i = 1; i <= n; i++) {
+            sum += solve(i - 1) * solve(n - i);
+        }
+
+        return dp[n] = sum;
+    }
+
+    int numTrees(int n) {
+        memset(dp, -1, sizeof(dp));
+        return solve(n);
+    }
+};
+```
+
+## Complexity Analysis
+
+- **Time Complexity:** \(O(n^2)\), because each subproblem is computed once, with a loop over all possible roots.
+- **Space Complexity:** \(O(n)\), for the memoization array and recursion stack.
+
+## Key Takeaway
+
+Memoization avoids repeated recursive calculations and improves the solution from exponential time to \(O(n^2)\). The recurrence is also known as the Catalan number recurrence.
