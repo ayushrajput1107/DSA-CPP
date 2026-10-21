@@ -1,0 +1,60 @@
+# Sum Root to Leaf Numbers
+
+## Approach
+
+We use **Depth-First Search (DFS)** to traverse the binary tree and construct numbers from root to leaf.
+
+At each node, we update the current number by multiplying it by `10` and adding the node's value.
+
+\[
+num = num \times 10 + root \rightarrow val
+\]
+
+When we reach a leaf node, we add the constructed number to the total sum.
+
+We recursively explore the left and right subtrees while carrying the current number along each path.
+
+## Algorithm
+
+1. If the current node is `NULL`, return.
+2. Append the current node's value to the number formed so far.
+3. If the current node is a leaf, add the number to `sum`.
+4. Recursively process the left subtree.
+5. Recursively process the right subtree.
+6. Return the total sum after traversing the tree.
+
+## C++ Code
+
+```cpp
+class Solution {
+    void solve(TreeNode* root, int& sum, int num) {
+        if (!root) return;
+
+        num = num * 10 + root->val;
+
+        if (!root->left && !root->right)
+            sum += num;
+
+        solve(root->left, sum, num);
+        solve(root->right, sum, num);
+    }
+
+public:
+    int sumNumbers(TreeNode* root) {
+        int sum = 0;
+        solve(root, sum, 0);
+        return sum;
+    }
+};
+```
+
+## Complexity Analysis
+
+- **Time Complexity:** \(O(n)\), where \(n\) is the number of nodes, because each node is visited once.
+- **Space Complexity:** \(O(h)\) auxiliary recursion stack space, where \(h\) is the height of the tree. In the worst case, this is \(O(n)\).
+
+## Key Takeaway
+
+The problem is solved using DFS by building each root-to-leaf number digit by digit and adding it to the total whenever a leaf node is reached.
+
+Since `num` is passed by value, each recursive call maintains its own copy. Therefore, the statement `num /= 10` is unnecessary.
