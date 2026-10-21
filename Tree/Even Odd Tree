@@ -1,0 +1,84 @@
+# Even Odd Tree
+
+## Approach
+
+We use **Breadth-First Search (BFS)** to traverse the binary tree level by level using a queue.
+
+Each level must satisfy two conditions:
+
+- **Even-indexed levels:** All node values must be odd and strictly increasing.
+- **Odd-indexed levels:** All node values must be even and strictly decreasing.
+
+We maintain a boolean variable `even` to track the current level and a variable `prev` to store the previous node's value at that level.
+
+If any condition is violated, we return `false`. If every level satisfies the rules, we return `true`.
+
+## Algorithm
+
+1. If the root is `NULL`, return `true`.
+2. Initialize a queue and push the root into it.
+3. Set `even = true` to represent level `0`.
+4. Process each level using BFS:
+   - Initialize `prev = -1`.
+   - Check the parity of each node according to the current level.
+   - Ensure values are strictly increasing on even-indexed levels.
+   - Ensure values are strictly decreasing on odd-indexed levels.
+   - Add the left and right children to the queue.
+5. Toggle the level indicator after processing each level.
+6. Return `true` if all levels satisfy the conditions.
+
+## C++ Code
+
+```cpp
+class Solution {
+public:
+    bool isEvenOddTree(TreeNode* root) {
+        if (!root) return true;
+
+        queue<TreeNode*> q;
+        q.push(root);
+
+        bool even = true;
+
+        while (!q.empty()) {
+            int n = q.size();
+            int prev = -1;
+
+            for (int i = 0; i < n; i++) {
+                auto node = q.front();
+                q.pop();
+
+                if (prev != -1 && even && node->val <= prev)
+                    return false;
+
+                if (prev != -1 && !even && node->val >= prev)
+                    return false;
+
+                if (even && node->val % 2 == 0)
+                    return false;
+
+                if (!even && node->val % 2 != 0)
+                    return false;
+
+                prev = node->val;
+
+                if (node->left) q.push(node->left);
+                if (node->right) q.push(node->right);
+            }
+
+            even = !even;
+        }
+
+        return true;
+    }
+};
+```
+
+## Complexity Analysis
+
+- **Time Complexity:** \(O(n)\), where \(n\) is the number of nodes, because each node is visited exactly once.
+- **Space Complexity:** \(O(n)\) in the worst case for the queue used in level-order traversal.
+
+## Key Takeaway
+
+This problem can be solved efficiently using **BFS and level-wise validation**. Checking parity and ordering as each node is processed allows us to return immediately when a violation is found.
