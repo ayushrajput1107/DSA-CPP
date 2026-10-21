@@ -1,0 +1,58 @@
+# Minimum Operations to Sort a String
+
+## Approach
+
+The goal is to find the minimum number of operations required to sort the string in ascending order.
+
+We can solve this problem by analyzing the positions of the minimum and maximum characters and checking whether the string can be sorted in 0, 1, 2, or 3 operations.
+
+1. **Already sorted:** If the string is sorted, return `0`.
+2. **Length equals 2:** If the string is not sorted and its length is `2`, return `-1`.
+3. **One operation:** If the first character is the minimum character or the last character is the maximum character, return `1`.
+4. **Three operations:** If the first character is greater than every character in the middle and the last character is smaller than every character in the middle, return `3`.
+5. **Two operations:** Otherwise, return `2`.
+
+## Algorithm
+
+1. Calculate the length of the string.
+2. Check whether the string is already sorted.
+3. Handle the special case where the length is `2`.
+4. Find the minimum and maximum characters in the string.
+5. Check whether the string can be sorted in one operation.
+6. Find the minimum and maximum characters in the middle portion of the string.
+7. If both boundary characters satisfy the three-operation condition, return `3`; otherwise, return `2`.
+
+## C++ Code
+
+```cpp
+class Solution {
+public:
+    int minOperations(string s) {
+        int n = s.length();
+
+        if (is_sorted(s.begin(), s.end())) return 0;
+        if (n == 2) return -1;
+
+        char mini = *min_element(s.begin(), s.end());
+        char maxi = *max_element(s.begin(), s.end());
+
+        if (s[0] == mini || s[n - 1] == maxi) return 1;
+
+        char min_mid = *min_element(s.begin() + 1, s.end() - 1);
+        char max_mid = *max_element(s.begin() + 1, s.end() - 1);
+
+        if (s[0] > max_mid && s[n - 1] < min_mid) return 3;
+
+        return 2;
+    }
+};
+```
+
+## Complexity Analysis
+
+- **Time Complexity:** \(O(n)\), because sorting checks and minimum/maximum character searches take linear time.
+- **Space Complexity:** \(O(1)\), because only a constant number of extra variables are used.
+
+## Key Takeaway
+
+The solution uses character comparisons and boundary analysis to determine the minimum number of operations without explicitly performing the operations or sorting the string.
