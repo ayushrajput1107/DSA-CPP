@@ -1,0 +1,43 @@
+# Reverse Integer
+
+## Approach
+
+We reverse the integer digit by digit using the modulo (`%`) and division (`/`) operators.
+
+1. Extract the last digit using `x % 10`.
+2. Append the digit to the reversed number using `n = n * 10 + rem`.
+3. Remove the last digit using `x /= 10`.
+4. Before appending a digit, check whether the result would overflow the 32-bit signed integer range.
+5. Return the reversed number.
+
+## C++ Code
+
+```cpp
+class Solution {
+public:
+    int reverse(int x) {
+        long long n = 0;
+
+        while (x != 0) {
+            int rem = x % 10;
+            n = n * 10 + rem;
+
+            if (n > INT_MAX || n < INT_MIN)
+                return 0;
+
+            x /= 10;
+        }
+
+        return (int)n;
+    }
+};
+```
+
+## Complexity Analysis
+
+- **Time Complexity:** \(O(\log |x|)\), because each iteration removes one digit.
+- **Space Complexity:** \(O(1)\), because only a constant amount of extra space is used.
+
+## Key Takeaway
+
+Using `long long` for the intermediate result and checking the integer boundaries prevents overflow when reversing a 32-bit signed integer.
