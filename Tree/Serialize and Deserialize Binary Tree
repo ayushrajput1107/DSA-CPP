@@ -1,0 +1,81 @@
+# Serialize and Deserialize Binary Tree
+
+**Approach: Preorder Traversal (DFS)**
+
+## Algorithm
+
+### 1. Serialization
+- Traverse the binary tree using preorder traversal: Root → Left → Right.
+- Append each node's value followed by a comma.
+- Represent every null node as `"N,"` to preserve the tree's structure.
+- Return the resulting string.
+
+### 2. Deserialization
+- Maintain an index to track the current position in the serialized string.
+- If the current token is `"N"`, advance the index and return `nullptr`.
+- Otherwise, extract the node's value, create a new tree node, and recursively construct its left and right subtrees.
+- Reset the index before decoding a new tree.
+
+## Complexity Analysis
+
+- **Time Complexity:** O(N), where N is the number of nodes in the tree.
+- **Space Complexity:** O(N) for the serialized string and recursion stack in the worst case.
+
+## C++ Code
+
+```cpp
+class Codec {
+    int index = 0;
+
+    TreeNode* solve(string data) {
+        if (index >= data.size()) return nullptr;
+
+        if (data[index] == 'N') {
+            index += 2;
+            return nullptr;
+        }
+
+        string temp = "";
+
+        while (data[index] != ',') {
+            temp += data[index];
+            index++;
+        }
+
+        index++;
+
+        TreeNode* node = new TreeNode(stoi(temp));
+        node->left = solve(data);
+        node->right = solve(data);
+
+        return node;
+    }
+
+    void string_helper(string& data, TreeNode* root) {
+        if (!root) {
+            data += "N,";
+            return;
+        }
+
+        data += to_string(root->val) + ",";
+        string_helper(data, root->left);
+        string_helper(data, root->right);
+    }
+
+public:
+    string serialize(TreeNode* root) {
+        string data;
+        string_helper(data, root);
+        return data;
+    }
+
+    TreeNode* deserialize(string data) {
+        index = 0;
+        return solve(data);
+    }
+};
+```
+
+## Key Insight
+
+The important part is storing null nodes explicitly. Without null markers, different binary trees can produce the same preorder traversal. Recording `"N,"` for every null pointer ensures that the original tree can be reconstructed uniquely.
