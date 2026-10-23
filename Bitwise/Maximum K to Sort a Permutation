@@ -1,0 +1,35 @@
+# 3644. Maximum K to Sort a Permutation
+
+## Approach: Bit Manipulation
+
+### Intuition
+We need to find the maximum value of `k` such that the permutation can be sorted using swaps where the bitwise AND of the two swapped elements equals `k`.
+
+Any element already at its correct index does not need to be moved. Therefore, we only consider elements for which `nums[i] != i`.
+
+The answer is the bitwise AND of all elements that are not at their correct positions. We initialize `ans = -1` because all bits are set in its two's complement representation. If the permutation is already sorted, we return `0`.
+
+### Code (C++)
+```cpp
+class Solution {
+public:
+    int sortPermutation(vector<int>& nums) {
+        int ans = -1;
+
+        for (int i = 0; i < nums.size(); i++) {
+            if (nums[i] != i) {
+                ans &= nums[i];
+            }
+        }
+
+        return max(ans, 0);
+    }
+};
+```
+
+### Complexity Analysis
+- **Time Complexity:** `O(n)` — We traverse the array once.
+- **Space Complexity:** `O(1)` — We use only a constant amount of extra space.
+
+### Key Takeaway
+Bitwise AND preserves only the bits that are set in every misplaced element. These common set bits determine the maximum valid value of `k`.
