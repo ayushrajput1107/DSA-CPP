@@ -1,0 +1,50 @@
+# 449. Serialize and Deserialize BST
+
+## Approach: Recursion
+
+### Intuition
+We serialize a Binary Search Tree (BST) into a string and reconstruct it using recursion. Each node value is stored in preorder traversal, and `-1` represents a null node.
+
+- Skip whitespace and extract the next value.
+- If the value is `-1`, return `NULL`.
+- Otherwise, create a new tree node.
+- Recursively construct its left and right subtrees.
+- Pass `index` by reference to maintain the correct parsing position.
+
+### Code (C++)
+```cpp
+TreeNode* solve(string& data, int& index) {
+    while (index < data.length() && data[index] == ' ')
+        index++;
+
+    if (index >= data.length())
+        return NULL;
+
+    string temp = "";
+
+    while (index < data.length() && data[index] != ' ') {
+        temp += data[index];
+        index++;
+    }
+
+    int num = stoi(temp);
+
+    if (num == -1)
+        return NULL;
+
+    TreeNode* node = new TreeNode(num);
+    node->left = solve(data, index);
+    node->right = solve(data, index);
+
+    return node;
+}
+```
+
+### Complexity Analysis
+- **Time Complexity:** `O(n)`, where `n` is the length of the serialized string.
+- **Space Complexity:** `O(h)` auxiliary recursion stack space, where `h` is the height of the tree.
+
+### Key Takeaway
+Passing the index by reference ensures that every recursive call continues parsing from the correct position.
+
+**Note:** This code assumes preorder serialization with `-1` as a null marker. For LeetCode 449, the standard solution serializes a BST without null markers and reconstructs it using BST value bounds.
