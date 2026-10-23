@@ -1,0 +1,54 @@
+# 59. Spiral Matrix II
+
+## Approach: Simulation (Boundary Traversal)
+
+### Intuition
+We use four boundaries: `top`, `bottom`, `left`, and `right` to fill the matrix in spiral order.
+
+1. Traverse the top row from left to right.
+2. Traverse the right column from top to bottom.
+3. Traverse the bottom row from right to left.
+4. Traverse the left column from bottom to top.
+
+After completing each traversal, update the corresponding boundary and continue until the entire matrix is filled.
+
+### Code (C++)
+```cpp
+class Solution {
+public:
+    vector<vector<int>> generateMatrix(int n) {
+        vector<vector<int>> ans(n, vector<int>(n, -1));
+        int num = 1;
+        int top = 0, left = 0, right = n - 1, bottom = n - 1;
+
+        while (top <= bottom && left <= right) {
+            for (int i = left; i <= right; i++)
+                ans[top][i] = num++;
+            top++;
+
+            for (int i = top; i <= bottom; i++)
+                ans[i][right] = num++;
+            right--;
+
+            if (top <= bottom) {
+                for (int i = right; i >= left; i--)
+                    ans[bottom][i] = num++;
+                bottom--;
+
+                for (int i = bottom; i >= top; i--)
+                    ans[i][left] = num++;
+                left++;
+            }
+        }
+
+        return ans;
+    }
+};
+```
+
+### Complexity Analysis
+- **Time Complexity:** `O(n²)` — Every matrix cell is visited once.
+- **Space Complexity:** `O(n²)` — The matrix itself requires `n × n` space.
+
+### Key Takeaway
+Boundary traversal is a simple way to solve spiral matrix problems. Updating the boundaries after each direction prevents duplicate visits and keeps the traversal within the remaining matrix.
