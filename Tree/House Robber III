@@ -1,0 +1,38 @@
+# [House Robber III](https://leetcode.com/problems/house-robber-iii/)
+
+## Approach
+- Use a recursive function that returns a pair of values for each node.
+- `first`: Maximum money that can be robbed when the current node is **not robbed**.
+- `second`: Maximum money that can be robbed when the current node **is robbed**.
+- If the current node is not robbed, take the maximum result from each child.
+- If the current node is robbed, add its value to the results where both children are not robbed.
+- Return the maximum of the two values for the root.
+
+## Code
+```cpp
+class Solution {
+public:
+    pair<int, int> solve(TreeNode* root) {
+        if (!root) return {0, 0};
+
+        pair<int, int> left_node = solve(root->left);
+        pair<int, int> right_node = solve(root->right);
+
+        int neigh = max(left_node.first, left_node.second)
+                  + max(right_node.first, right_node.second);
+
+        int not_neigh = root->val + left_node.first + right_node.first;
+
+        return {neigh, not_neigh};
+    }
+
+    int rob(TreeNode* root) {
+        auto [max1, max2] = solve(root);
+        return max(max1, max2);
+    }
+};
+```
+
+## Complexity Analysis
+- **Time Complexity:** \(O(n)\), where \(n\) is the number of nodes, because each node is visited once.
+- **Space Complexity:** \(O(h)\), where \(h\) is the height of the tree, due to the recursive call stack.
