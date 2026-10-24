@@ -1,0 +1,38 @@
+# [Count Subarrays With Loose Bounds](https://leetcode.com/problems/count-subarrays-with-loose-bounds/)
+
+## Approach
+- Use two pointers, `left` and `right`, to track the current valid segment.
+- If an element is smaller than `minK` or greater than `maxK`, move `left` to the next position after the invalid element.
+- For every valid element, add `(right - left + 1)` to the answer, representing all subarrays ending at the current index within the valid segment.
+
+## Code
+```cpp
+class Solution {
+public:
+    long long countSubarrays(vector<int>& nums, int minK, int maxK) {
+        long long ans = 0;
+        int left = 0, right = 0, n = nums.size();
+
+        while (right < n) {
+            while (right < n && 
+                  (nums[right] < minK || nums[right] > maxK)) {
+                right++;
+                left = right;
+            }
+
+            if (right < n && nums[right] <= maxK && nums[right] >= minK) {
+                ans += (right - left + 1);
+            }
+
+            right++;
+        }
+
+        return ans;
+    }
+};
+```
+
+## Complexity Analysis
+- **Time Complexity:** \(O(n)\), as each element is visited at most a constant number of times.
+- **Space Complexity:** \(O(1)\), as only a few variables are used.
+
