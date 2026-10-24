@@ -1,0 +1,75 @@
+# [Count Days Spent Together](https://leetcode.com/problems/count-days-spent-together/)
+
+## Approach
+- Extract the month and day from each arrival and departure date.
+- Find the overlapping start date by taking the later arrival date.
+- Find the overlapping end date by taking the earlier departure date.
+- If the start date is after the end date, return `0`.
+- Count the overlapping days month by month, including both the start and end dates.
+
+## Code
+```cpp
+class Solution {
+public:
+    int countDaysTogether(string arriveAlice, string leaveAlice, string arriveBob, string leaveBob) {
+        int alice_arrived_month = stoi(arriveAlice.substr(0, 2));
+        int alice_arrived_day = stoi(arriveAlice.substr(3, 2));
+        int alice_leave_month = stoi(leaveAlice.substr(0, 2));
+        int alice_leave_day = stoi(leaveAlice.substr(3, 2));
+
+        int bob_arrived_month = stoi(arriveBob.substr(0, 2));
+        int bob_arrived_day = stoi(arriveBob.substr(3, 2));
+        int bob_leave_month = stoi(leaveBob.substr(0, 2));
+        int bob_leave_day = stoi(leaveBob.substr(3, 2));
+
+        unordered_map<int, int> mp = {
+            {1, 31}, {2, 28}, {3, 31}, {4, 30},
+            {5, 31}, {6, 30}, {7, 31}, {8, 31},
+            {9, 30}, {10, 31}, {11, 30}, {12, 31}
+        };
+
+        int start_month = max(alice_arrived_month, bob_arrived_month);
+        int start_day;
+
+        if (alice_arrived_month == bob_arrived_month)
+            start_day = max(alice_arrived_day, bob_arrived_day);
+        else if (start_month == alice_arrived_month)
+            start_day = alice_arrived_day;
+        else
+            start_day = bob_arrived_day;
+
+        int end_month = min(alice_leave_month, bob_leave_month);
+        int end_day;
+
+        if (alice_leave_month == bob_leave_month)
+            end_day = min(alice_leave_day, bob_leave_day);
+        else if (end_month == alice_leave_month)
+            end_day = alice_leave_day;
+        else
+            end_day = bob_leave_day;
+
+        if (start_month > end_month ||
+            (start_month == end_month && start_day > end_day))
+            return 0;
+
+        int total_days = 0;
+
+        for (int i = start_month; i <= end_month; i++) {
+            if (i == start_month && i == end_month)
+                total_days += end_day - start_day + 1;
+            else if (i == start_month)
+                total_days += mp[i] - start_day + 1;
+            else if (i == end_month)
+                total_days += end_day;
+            else
+                total_days += mp[i];
+        }
+
+        return total_days;
+    }
+};
+```
+
+## Complexity Analysis
+- **Time Complexity:** \(O(1)\) — at most 12 months are processed.
+- **Space Complexity:** \(O(1)\) — the month-length map has a fixed size.
