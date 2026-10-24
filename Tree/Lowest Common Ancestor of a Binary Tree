@@ -1,0 +1,31 @@
+# [Lowest Common Ancestor of a Binary Tree](https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-tree/)
+
+## Approach
+- If the current node is `NULL`, return `nullptr`.
+- If the current node matches either `p` or `q`, return the current node.
+- Recursively search for `p` and `q` in the left and right subtrees.
+- If both subtrees return non-null nodes, the current node is the Lowest Common Ancestor (LCA).
+- Otherwise, return whichever subtree result is non-null.
+
+## Code
+```cpp
+class Solution {
+public:
+    TreeNode* lowestCommonAncestor(TreeNode* root, TreeNode* p, TreeNode* q) {
+        if (!root) return nullptr;
+        if (root == p) return p;
+        if (root == q) return q;
+
+        TreeNode* left_node = lowestCommonAncestor(root->left, p, q);
+        TreeNode* right_node = lowestCommonAncestor(root->right, p, q);
+
+        if (left_node && right_node) return root;
+
+        return left_node ? left_node : right_node;
+    }
+};
+```
+
+## Complexity Analysis
+- **Time Complexity:** \(O(n)\), where \(n\) is the number of nodes in the binary tree, since each node is visited at most once.
+- **Space Complexity:** \(O(h)\), where \(h\) is the height of the tree, due to the recursive call stack. In the worst case, \(O(n)\) for a skewed tree.
