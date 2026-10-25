@@ -1,0 +1,59 @@
+# [Determine if Two Strings Are Close](https://leetcode.com/problems/determine-if-two-strings-are-close/)
+
+## Approach
+Two strings are considered close if we can transform one string into the other using the following operations:
+
+1. Swap any two existing characters.
+2. Transform every occurrence of one character into another character and vice versa.
+
+To determine whether two strings are close, we check three conditions:
+
+- **Equal Length:** Both strings must have the same length.
+- **Same Characters:** Both strings must contain exactly the same set of distinct characters.
+- **Same Frequency Distribution:** The frequencies of characters in both strings must match after sorting the frequency arrays.
+
+The first two conditions ensure that we cannot introduce a new character or remove an existing character. Sorting the frequency arrays verifies that the character frequencies can be rearranged to match using the allowed operations.
+
+## Algorithm
+1. If the lengths of the strings differ, return `false`.
+2. Create two frequency arrays of size 26 to count lowercase English letters.
+3. Traverse both strings and calculate the frequency of each character.
+4. Check that both strings contain the same characters. If a character appears in only one string, return `false`.
+5. Sort both frequency arrays.
+6. Return whether the sorted frequency arrays are equal.
+
+## C++ Code
+
+```cpp
+class Solution {
+public:
+    bool closeStrings(string word1, string word2) {
+        if (word1.length() != word2.length()) return false;
+
+        vector<int> alpha1(26, 0), alpha2(26, 0);
+
+        for (char ch : word1) alpha1[ch - 'a']++;
+        for (char ch : word2) alpha2[ch - 'a']++;
+
+        for (int i = 0; i < 26; i++) {
+            if ((alpha1[i] == 0 && alpha2[i] > 0) ||
+                (alpha2[i] == 0 && alpha1[i] > 0)) {
+                return false;
+            }
+        }
+
+        sort(alpha1.begin(), alpha1.end());
+        sort(alpha2.begin(), alpha2.end());
+
+        return alpha1 == alpha2;
+    }
+};
+```
+
+## Complexity Analysis
+
+- **Time Complexity:** \(O(n)\), where \(n\) is the length of the strings. Counting frequencies takes \(O(n)\), while sorting two fixed-size arrays of 26 elements takes constant time.
+- **Space Complexity:** \(O(1)\), since both frequency arrays have a fixed size of 26.
+
+## Key Takeaway
+Two strings are close if they have the **same set of characters and the same multiset of character frequencies**. The frequencies can belong to different characters because the allowed operations let us swap character identities.
