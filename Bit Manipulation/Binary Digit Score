@@ -1,0 +1,43 @@
+# [Binary Digit Score](https://leetcode.com/problems/binary-digit-score/)
+
+## Approach: Bit Manipulation
+
+The idea is to count the number of set bits (`1`s) in the binary representation of both integers `a` and `b`.
+
+### Algorithm
+1. Create a helper function `find_binary(n)` to count the set bits in an integer.
+2. Use `n & 1` to check whether the rightmost bit is set.
+3. Right-shift `n` by one position using `n >>= 1` to process the next bit.
+4. Calculate the set-bit counts of `a` and `b`.
+5. If `s1 >= s2`, return their product; otherwise, return `s2 / s1`.
+
+## Code (C++)
+
+```cpp
+class Solution {
+public:
+    int find_binary(int n) {
+        int count = 0;
+
+        while (n) {
+            if (n & 1) count++;
+            n >>= 1;
+        }
+
+        return count;
+    }
+
+    int calculateScore(int a, int b) {
+        int s1 = find_binary(a);
+        int s2 = find_binary(b);
+
+        return s1 >= s2 ? (s1 * s2) : (s2 / s1);
+    }
+};
+```
+
+## Complexity Analysis
+
+- **Time Complexity:** \(O(\log a + \log b)\), since each helper call processes the binary digits of its input.
+- **Space Complexity:** \(O(1)\), as only a constant number of variables are used.
+
