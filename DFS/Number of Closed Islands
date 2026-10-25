@@ -1,0 +1,77 @@
+# [Number of Closed Islands](https://leetcode.com/problems/number-of-closed-islands/)
+
+## Approach: DFS (Depth First Search)
+
+We are given a binary grid where `0` represents land and `1` represents water. A closed island is a connected group of land cells that does not touch the boundary of the grid.
+
+### Algorithm
+1. Traverse every cell in the grid.
+2. Whenever an unvisited land cell (`0`) is found, start a DFS traversal.
+3. Mark each visited land cell with `count` to avoid revisiting it.
+4. If any cell of the island touches the grid boundary, mark the island as not closed using the `boundary` flag.
+5. After exploring the entire island, increment the answer only if `boundary` remains `false`.
+
+## Code (C++)
+
+```cpp
+class Solution {
+public:
+    int count = 1;
+
+    void solve(vector<vector<int>>& grid, bool& boundary, int row, int col,
+               vector<pair<int,int>>& dr) {
+        if (row < 0 || col < 0 ||
+            row >= grid.size() || col >= grid[0].size())
+            return;
+
+        if (grid[row][col] != 0) return;
+
+        grid[row][col] = count;
+
+        if (row == 0 || col == 0 ||
+            row == grid.size() - 1 ||
+            col == grid[0].size() - 1)
+            boundary = true;
+
+        for (const auto& it : dr) {
+            int r = row + it.first;
+            int c = col + it.second;
+
+            if (r < 0 || c < 0 ||
+                r >= grid.size() || c >= grid[0].size())
+                continue;
+
+            solve(grid, boundary, r, c, dr);
+        }
+    }
+
+    int closedIsland(vector<vector<int>>& grid) {
+        vector<pair<int,int>> dr = {
+            {-1,0}, {0,1}, {1,0}, {0,-1}
+        };
+
+        int row = grid.size(), col = grid[0].size(), ans = 0;
+
+        for (int i = 0; i < row; i++) {
+            for (int j = 0; j < col; j++) {
+                if (grid[i][j] == 0) {
+                    count++;
+                    bool boundary = false;
+
+                    solve(grid, boundary, i, j, dr);
+
+                    if (!boundary) ans++;
+                }
+            }
+        }
+
+        return ans;
+    }
+};
+```
+
+## Complexity Analysis
+
+- **Time Complexity:** \(O(m \times n)\) — Each cell is visited at most once.
+- **Space Complexity:** \(O(m \times n)\) — In the worst case, the recursive DFS call stack can contain up to \(m \times n\) cells.
+
