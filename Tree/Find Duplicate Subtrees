@@ -1,0 +1,50 @@
+# [Find Duplicate Subtrees](https://leetcode.com/problems/find-duplicate-subtrees/)
+
+## Approach: Tree Serialization + Hash Map
+
+The idea is to convert each subtree into a unique string representation using a postorder traversal and store its frequency in an `unordered_map`.
+
+### Algorithm
+1. Traverse the binary tree recursively.
+2. If the current node is `NULL`, return `"N"` to represent a null node.
+3. Construct a serialization using the current node's value, left subtree, and right subtree.
+4. Check the frequency of this serialization in the hash map:
+   - If its frequency is `1`, this is the second occurrence, so add the current node to the result.
+   - Increment the frequency of the serialization.
+5. Return the result containing the roots of all duplicate subtrees.
+
+## Code (C++)
+
+```cpp
+class Solution {
+public:
+    unordered_map<string, int> mp;
+
+    string solve(TreeNode* root, vector<TreeNode*>& res) {
+        if (!root) return "N";
+
+        string s = to_string(root->val) + ", " +
+                   solve(root->left, res) + ", " +
+                   solve(root->right, res);
+
+        if (mp[s] == 1)
+            res.push_back(root);
+
+        mp[s]++;
+
+        return s;
+    }
+
+    vector<TreeNode*> findDuplicateSubtrees(TreeNode* root) {
+        vector<TreeNode*> res;
+        solve(root, res);
+        return res;
+    }
+};
+```
+
+## Complexity Analysis
+
+- **Time Complexity:** \(O(n^2)\) in the worst case because subtree serialization strings can have lengths proportional to the number of nodes in each subtree, and string construction and hashing take time proportional to their lengths.
+- **Space Complexity:** \(O(n^2)\) in the worst case for storing all subtree serialization strings in the hash map, plus \(O(h)\) recursion stack space, where \(h\) is the tree height.
+
