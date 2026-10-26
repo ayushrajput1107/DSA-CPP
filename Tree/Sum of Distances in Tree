@@ -1,0 +1,88 @@
+# [Sum of Distances in Tree](https://leetcode.com/problems/sum-of-distances-in-tree/)
+
+## Approach: DFS + Tree Rerooting
+
+The goal is to calculate the sum of distances from every node to all other nodes in the tree.
+
+We use two DFS traversals:
+
+1. **First DFS (`dfs_base`):**
+   - Calculates the subtree size of each node.
+   - Computes the sum of distances from node `0` to all other nodes.
+
+2. **Second DFS (`DFS`):**
+   - Uses the subtree sizes to calculate the distance sum for each node by rerooting the tree.
+
+### Rerooting Formula
+
+When moving the root from a parent to its child:
+
+\[
+ans[child] = ans[parent] - subtree[child] + (n - subtree[child])
+\]
+
+The distance decreases by one for every node in the child's subtree and increases by one for every node outside it.
+
+## Code (C++)
+
+```cpp
+class Solution {
+public:
+    vector<int> count;
+    int root_node;
+    int N;
+
+    int dfs_base(vector<vector<int>>& nodes, int curr_node, int prev_node, int depth) {
+        int Total_count = 1;
+        root_node += depth;
+
+        for (const auto& edge : nodes[curr_node]) {
+            if (edge == prev_node) continue;
+            Total_count += dfs_base(nodes, edge, curr_node, depth + 1);
+        }
+
+        count[curr_node] = Total_count;
+        return Total_count;
+    }
+
+    void DFS(vector<vector<int>>& nodes, int curr_node, int prev_node,
+             vector<int>& result) {
+        for (const auto& edge : nodes[curr_node]) {
+            if (edge == prev_node) continue;
+
+            result[edge] = result[curr_node] - count[edge] + (N - count[edge]);
+            DFS(nodes, edge, curr_node, result);
+        }
+    }
+
+    vector<int> sumOfDistancesInTree(int n, vector<vector<int>>& edges) {
+        vector<vector<int>> nodes(n);
+        N = n;
+
+        for (const auto& it : edges) {
+            nodes[it[0]].push_back(it[1]);
+            nodes[it[1]].push_back(it[0]);
+        }
+
+        root_node = 0;
+        count.resize(n, 0);
+        vector<int> result(n, 0);
+
+        dfs_base(nodes, 0, -1, 0);
+        result[0] = root_node;
+
+        DFS(nodes, 0, -1, result);
+
+        return result;
+    }
+};
+```
+
+## Complexity Analysis
+
+- **Time Complexity:** \(O(n)\) — each node and edge is processed a constant number of times.
+- **Space Complexity:** \(O(n)\) — for the adjacency list, subtree sizes, result array, and recursion stack.
+
+## Key Takeaway
+
+Tree rerooting allows us to calculate the answer for every node efficiently using the result for its parent, avoiding a separate traversal from every node. This reduces the time complexity from \(O(n^2)\) to \(O(n)\).
