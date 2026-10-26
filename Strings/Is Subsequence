@@ -1,0 +1,42 @@
+# [Is Subsequence](https://leetcode.com/problems/is-subsequence/)
+
+## Approach: Two Pointers
+
+We traverse string `t` and check whether the characters of string `s` appear in the same order.
+
+- Maintain `index` to track the next character to match in `s`.
+- If `t[i] == s[index]`, increment `index`.
+- If all characters of `s` are matched, return `true`.
+- Otherwise, return `false` after traversing `t`.
+
+### Code (C++)
+
+```cpp
+class Solution {
+public:
+    bool isSubsequence(string s, string t) {
+        int index = 0;
+
+        for (int i = 0; i < t.length(); i++) {
+            if (index < s.length() && t[i] == s[index]) {
+                index++;
+            }
+
+            if (index == s.length()) return true;
+        }
+
+        return index == s.length();
+    }
+};
+```
+
+### Complexity Analysis
+
+- **Time Complexity:** \(O(n)\), where \(n\) is the length of `t`.
+- **Space Complexity:** \(O(1)\), as only a constant amount of extra space is used.
+
+### Key Takeaway
+
+A subsequence preserves the relative order of characters but does not require them to be contiguous.
+
+**Edge case:** If `s` is empty, it is always a subsequence of `t`, so the function correctly returns `true`.
