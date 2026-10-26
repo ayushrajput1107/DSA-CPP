@@ -1,0 +1,51 @@
+# [Uncrossed Lines](https://leetcode.com/problems/uncrossed-lines/)
+
+## Approach: Recursion + Memoization (LCS)
+
+The problem is equivalent to finding the **Longest Common Subsequence (LCS)** of two arrays.
+
+- If `nums1[i] == nums2[j]`, we can connect these elements and add `1` to the answer.
+- Otherwise, we try skipping an element from either array and take the maximum result.
+- We use memoization (`dp[i][j]`) to avoid recalculating overlapping subproblems.
+
+### Code (C++)
+
+```cpp
+class Solution {
+public:
+    int dp[501][501];
+
+    int lcs(vector<int>& nums1, vector<int>& nums2, int i, int j) {
+        if (i >= nums1.size() || j >= nums2.size()) return 0;
+
+        if (dp[i][j] != -1) return dp[i][j];
+
+        int take = 0, not_take = 0;
+
+        if (nums1[i] == nums2[j]) {
+            take = 1 + lcs(nums1, nums2, i + 1, j + 1);
+        }
+
+        not_take = max(
+            lcs(nums1, nums2, i, j + 1),
+            lcs(nums1, nums2, i + 1, j)
+        );
+
+        return dp[i][j] = max(take, not_take);
+    }
+
+    int maxUncrossedLines(vector<int>& nums1, vector<int>& nums2) {
+        memset(dp, -1, sizeof(dp));
+        return lcs(nums1, nums2, 0, 0);
+    }
+};
+```
+
+### Complexity Analysis
+
+- **Time Complexity:** \(O(n \times m)\), where \(n\) and \(m\) are the sizes of the two arrays.
+- **Space Complexity:** \(O(n \times m)\) for the DP table, plus \(O(n+m)\) for the recursion stack in the worst case.
+
+### Key Takeaway
+
+Uncrossed lines cannot intersect, so matching elements must preserve their relative order. Therefore, the maximum number of uncrossed lines is exactly the length of the **Longest Common Subsequence (LCS)**.
