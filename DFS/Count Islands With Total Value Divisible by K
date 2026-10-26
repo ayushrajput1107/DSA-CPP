@@ -1,0 +1,69 @@
+# [Count Islands With Total Value Divisible by K](https://leetcode.com/problems/count-islands-with-total-value-divisible-by-k/)
+
+## Approach: DFS (Depth-First Search)
+
+We traverse the grid and use DFS to find each connected island of non-zero cells. For every island, we calculate the sum of its cell values and check whether the sum is divisible by `k`.
+
+### Code (C++)
+
+```cpp
+class Solution {
+public:
+    void solve(vector<vector<int>>& grid, vector<vector<int>>& vis,
+               int row, int col, long long& sum,
+               vector<pair<int,int>>& dir) {
+        if (row < 0 || col < 0 || row >= grid.size() ||
+            col >= grid[0].size() || vis[row][col]) return;
+
+        vis[row][col] = 1;
+        sum += grid[row][col];
+
+        for (const auto& it : dir) {
+            int r = row + it.first;
+            int c = col + it.second;
+
+            if (r < 0 || c < 0 || r >= grid.size() ||
+                c >= grid[0].size() || vis[r][c] ||
+                grid[r][c] == 0) continue;
+
+            solve(grid, vis, r, c, sum, dir);
+        }
+    }
+
+    int countIslands(vector<vector<int>>& grid, int k) {
+        int row = grid.size(), col = grid[0].size();
+
+        vector<vector<int>> vis(row, vector<int>(col, 0));
+        vector<pair<int,int>> dir = {
+            {-1, 0}, {0, 1}, {1, 0}, {0, -1}
+        };
+
+        int count = 0;
+
+        for (int i = 0; i < row; i++) {
+            for (int j = 0; j < col; j++) {
+                if (!vis[i][j] && grid[i][j] != 0) {
+                    long long sum = 0;
+                    solve(grid, vis, i, j, sum, dir);
+
+                    if (sum % k == 0) count++;
+                }
+            }
+        }
+
+        return count;
+    }
+};
+```
+
+### Complexity Analysis
+
+- **Time Complexity:** \(O(m \times n)\), where \(m\) is the number of rows and \(n\) is the number of columns. Every cell is visited at most once.
+- **Space Complexity:** \(O(m \times n)\) for the visited matrix, with additional recursion stack space of up to \(O(m \times n)\) in the worst case.
+
+### Key Points
+
+- An island consists of connected non-zero cells.
+- Only four-directional adjacency is considered.
+- Each island's total value is calculated independently.
+- An island is counted if `sum % k == 0`.
