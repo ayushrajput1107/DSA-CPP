@@ -1,0 +1,40 @@
+# [Longest Consecutive Sequence](https://leetcode.com/problems/longest-consecutive-sequence/)
+
+## Approach: Hash Set
+
+### Intuition
+- Store all elements in an `unordered_set` to remove duplicates and achieve average \(O(1)\) lookup time.
+- Iterate through the set and start counting only when the previous element (`n - 1`) does not exist. This ensures that we start counting from the beginning of each consecutive sequence.
+- Count consecutive elements using `n + len` until an element is missing.
+- Update `max_count` with the maximum sequence length found.
+
+### Code
+```cpp
+class Solution {
+public:
+    int longestConsecutive(vector<int>& nums) {
+        unordered_set<int> st(nums.begin(), nums.end());
+        if (nums.empty()) return 0;
+
+        int max_count = 0;
+
+        for (int n : st) {
+            if (st.count(n - 1)) continue;
+
+            int len = 1;
+            while (st.count(n + len)) len++;
+
+            max_count = max(max_count, len);
+        }
+
+        return max_count;
+    }
+};
+```
+
+### Complexity Analysis
+- **Time Complexity:** \(O(n)\) average, where \(n\) is the number of elements. Each sequence is traversed only from its starting element.
+- **Space Complexity:** \(O(n)\) for storing the elements in the hash set.
+
+### Key Takeaway
+Starting a sequence only when its previous element is absent prevents redundant traversal and achieves an average linear-time solution.
