@@ -1,0 +1,64 @@
+# [Add Strings](https://leetcode.com/problems/add-strings/)
+
+## Approach: Digit-by-Digit Addition
+
+### Intuition
+- Traverse both strings from right to left, starting with the least significant digits.
+- Add the corresponding digits along with the carry (`rem`).
+- Store the last digit of the sum using `sum % 10` and update the carry using `sum / 10`.
+- If one string has remaining digits, add them along with the carry.
+- Append the final carry if it exists.
+- Reverse the result string to obtain the correct answer.
+
+### Code
+```cpp
+class Solution {
+public:
+    string addStrings(string num1, string num2) {
+        int i1 = num1.length() - 1, i2 = num2.length() - 1;
+        string res = "";
+        int rem = 0;
+
+        while (i1 >= 0 && i2 >= 0) {
+            int n1 = num1[i1] - '0';
+            int n2 = num2[i2] - '0';
+
+            int sum = n1 + n2 + rem;
+            rem = sum / 10;
+
+            res += to_string(sum % 10);
+
+            i1--;
+            i2--;
+        }
+
+        while (i1 >= 0) {
+            int sum = (num1[i1] - '0') + rem;
+            rem = sum / 10;
+
+            res += to_string(sum % 10);
+            i1--;
+        }
+
+        while (i2 >= 0) {
+            int sum = (num2[i2] - '0') + rem;
+            rem = sum / 10;
+
+            res += to_string(sum % 10);
+            i2--;
+        }
+
+        if (rem) res += to_string(rem);
+
+        reverse(res.begin(), res.end());
+        return res;
+    }
+};
+```
+
+### Complexity Analysis
+- **Time Complexity:** \(O(\max(n,m))\), where \(n\) and \(m\) are the lengths of the two strings.
+- **Space Complexity:** \(O(\max(n,m))\) for storing the result.
+
+### Key Takeaway
+String-based addition allows us to add arbitrarily large non-negative integers without converting them into built-in numeric types. The carry mechanism is the same as in elementary addition.
