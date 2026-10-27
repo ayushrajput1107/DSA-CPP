@@ -1,0 +1,64 @@
+# [Ones and Zeroes](https://leetcode.com/problems/ones-and-zeroes/)
+
+## Approach: Recursion + Memoization (3D DP)
+
+### Intuition
+- For each binary string, count the number of zeros and ones and store them as a pair.
+- Use recursion to explore two choices for every string:
+  - **Take:** Include the current string if the remaining zero and one limits are sufficient.
+  - **Not Take:** Skip the current string and move to the next one.
+- Store the maximum number of strings that can be selected in `dp[index][m][n]` to avoid recomputing overlapping subproblems.
+- Return the maximum number of strings that can be formed within the given limits.
+
+### Code
+```cpp
+class Solution {
+public:
+    int dp[601][101][101];
+
+    int solve(vector<pair<int,int>>& nums, int index, int m, int n) {
+        if (m < 0 || n < 0 || index >= nums.size()) return 0;
+
+        if (dp[index][m][n] != -1)
+            return dp[index][m][n];
+
+        int take = 0, not_take = 0;
+
+        if (m >= nums[index].first && n >= nums[index].second) {
+            take = 1 + solve(nums, index + 1,
+                             m - nums[index].first,
+                             n - nums[index].second);
+        }
+
+        not_take = solve(nums, index + 1, m, n);
+
+        return dp[index][m][n] = max(take, not_take);
+    }
+
+    int findMaxForm(vector<string>& strs, int m, int n) {
+        vector<pair<int,int>> nums;
+
+        for (const auto& str : strs) {
+            int count_ones = 0, count_zero = 0;
+
+            for (const char& ch : str) {
+                ch == '1' ? count_ones++ : count_zero++;
+            }
+
+            nums.push_back({count_zero, count_ones});
+        }
+
+        memset(dp, -1, sizeof(dp));
+        return solve(nums, 0, m, n);
+    }
+};
+```
+
+### Complexity Analysis
+Let \(L\) be the total number of characters across all strings and \(k\) be the number of strings.
+
+- **Time Complexity:** \(O(L + kmn)\), including counting zeros and ones and solving the DP states.
+- **Space Complexity:** \(O(kmn)\) for the memoization table and \(O(k)\) for the recursion stack.
+
+### Key Takeaway
+This problem is a variation of the **0/1 Knapsack problem with two constraints**. Each string consumes a certain number of zeros and ones, and the goal is to maximize the number of selected strings without exceeding either limit.
