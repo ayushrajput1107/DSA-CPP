@@ -1,0 +1,52 @@
+# [Coin Change II](https://leetcode.com/problems/coin-change-ii/)
+
+## Approach: Recursion + Memoization (2D DP)
+
+### Intuition
+- The goal is to find the number of combinations that make up the given amount using the available coin denominations.
+- At each index, we have two choices:
+  - **Take:** If the current coin does not exceed the remaining amount, use it and stay at the same index because each coin can be used unlimited times.
+  - **Not Take:** Skip the current coin and move to the next index.
+- Memoize each state `dp[index][amount]` to avoid recalculating the same subproblems.
+- When the remaining amount becomes zero, return `1` because we have found one valid combination.
+- If all coins are exhausted while the amount is still positive, return `0`.
+
+### Code
+```cpp
+class Solution {
+public:
+    int dp[301][5001];
+
+    int solve(vector<int>& coins, int amount, int index) {
+        if (amount == 0) return 1;
+        if (index >= coins.size()) return 0;
+
+        if (dp[index][amount] != -1)
+            return dp[index][amount];
+
+        int take = 0;
+
+        if (amount >= coins[index]) {
+            take = solve(coins, amount - coins[index], index);
+        }
+
+        int not_take = solve(coins, amount, index + 1);
+
+        return dp[index][amount] = take + not_take;
+    }
+
+    int change(int amount, vector<int>& coins) {
+        memset(dp, -1, sizeof(dp));
+        return solve(coins, amount, 0);
+    }
+};
+```
+
+### Complexity Analysis
+Let \(n\) be the number of coin denominations and \(A\) be the target amount.
+
+- **Time Complexity:** \(O(nA)\), since each DP state is computed at most once.
+- **Space Complexity:** \(O(nA)\) for the memoization table, plus recursion stack space.
+
+### Key Takeaway
+This is an **Unbounded Knapsack counting problem**. Since coins can be reused, the take operation stays at the same index. By considering the take and not-take choices, we count combinations without treating different orders of the same coins as different combinations.
