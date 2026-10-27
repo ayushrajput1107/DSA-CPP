@@ -1,0 +1,54 @@
+# [Coin Change](https://leetcode.com/problems/coin-change/)
+
+## Approach: Recursion + Memoization (2D DP)
+
+### Intuition
+- Use recursion to determine the minimum number of coins required to make the given amount.
+- At each index, consider two choices:
+  - **Take:** If the current coin is less than or equal to the remaining amount, take it and stay at the same index because coins can be reused.
+  - **Not Take:** Skip the current coin and move to the next index.
+- Store the minimum number of coins required for each state in `dp[index][amount]` to avoid repeated calculations.
+- If the amount cannot be formed using the available coins, return `-1`.
+
+### Code
+```cpp
+class Solution {
+public:
+    int dp[13][100000];
+
+    int solve(vector<int>& coins, int amount, int index) {
+        if (amount <= 0) return 0;
+        if (index >= coins.size()) return INT_MAX;
+
+        if (dp[index][amount] != -1)
+            return dp[index][amount];
+
+        int take = INT_MAX, not_take = INT_MAX;
+
+        if (amount >= coins[index]) {
+            take = solve(coins, amount - coins[index], index);
+            if (take != INT_MAX) take += 1;
+        }
+
+        not_take = solve(coins, amount, index + 1);
+
+        return dp[index][amount] = min(take, not_take);
+    }
+
+    int coinChange(vector<int>& coins, int amount) {
+        memset(dp, -1, sizeof(dp));
+
+        int ans = solve(coins, amount, 0);
+        return ans == INT_MAX ? -1 : ans;
+    }
+};
+```
+
+### Complexity Analysis
+Let \(k\) be the number of coins and \(A\) be the target amount.
+
+- **Time Complexity:** \(O(kA)\), since each DP state is computed once.
+- **Space Complexity:** \(O(kA)\) for the memoization table, plus recursion stack space.
+
+### Key Takeaway
+This problem is an **Unbounded Knapsack variation** because each coin denomination can be used multiple times. Memoization avoids recalculating states and helps find the minimum number of coins efficiently.
