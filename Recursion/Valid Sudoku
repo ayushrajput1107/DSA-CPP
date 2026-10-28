@@ -1,0 +1,87 @@
+# [Valid Sudoku](https://leetcode.com/problems/valid-sudoku/)
+
+## Approach: Hash Set
+
+- Iterate through every cell of the Sudoku board.
+- For each cell, validate its column, row, and corresponding \(3 \times 3\) sub-box using an `unordered_set<char>`.
+- Ignore empty cells represented by `'.'`.
+- If a digit appears more than once in any row, column, or sub-box, return `false`.
+- If every cell passes validation, return `true`.
+
+## Code
+
+```cpp
+class Solution {
+public:
+    bool check(vector<vector<char>>& board, int row, int col) {
+        int r = board.size(), c = board[0].size();
+        unordered_set<char> st;
+
+        // Check column
+        for (int i = 0; i < r; i++) {
+            char ch = board[i][col];
+            if (ch == '.') continue;
+            if (st.count(ch)) return false;
+            st.insert(ch);
+        }
+
+        st.clear();
+
+        // Check row
+        for (int i = 0; i < c; i++) {
+            char ch = board[row][i];
+            if (ch == '.') continue;
+            if (st.count(ch)) return false;
+            st.insert(ch);
+        }
+
+        st.clear();
+
+        // Check 3x3 sub-box
+        int x = row - (row % 3);
+        int y = col - (col % 3);
+
+        for (int Row = x; Row < x + 3; Row++) {
+            for (int Col = y; Col < y + 3; Col++) {
+                char ch = board[Row][Col];
+                if (ch == '.') continue;
+                if (st.count(ch)) return false;
+                st.insert(ch);
+            }
+        }
+
+        return true;
+    }
+
+    bool isValid(vector<vector<char>>& board) {
+        int row = board.size(), col = board[0].size();
+
+        for (int i = 0; i < row; i++) {
+            for (int j = 0; j < col; j++) {
+                if (!check(board, i, j)) return false;
+            }
+        }
+
+        return true;
+    }
+
+    bool isValidSudoku(vector<vector<char>>& board) {
+        return isValid(board);
+    }
+};
+```
+
+## Complexity Analysis
+
+Let \(n\) be the board's dimension.
+
+- **Time Complexity:** \(O(n^3)\), because each of the \(n^2\) cells triggers row, column, and sub-box checks costing \(O(n)\) in total.
+- **Auxiliary Space:** \(O(n)\) for the hash set.
+
+For the standard \(9 \times 9\) Sudoku board, both are effectively constant.
+
+## Optimization
+
+Your approach is correct for a standard \(9 \times 9\) board, but it repeatedly checks the same rows, columns, and boxes for every cell.
+
+A more efficient approach uses three arrays of hash sets (or Boolean arrays) and checks each cell only once, achieving \(O(n^2)\) time. Also, the official LeetCode function signature is `isValidSudoku`, which your code correctly implements.
