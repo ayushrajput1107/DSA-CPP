@@ -1,0 +1,56 @@
+# [Non-decreasing Subsequences](https://leetcode.com/problems/non-decreasing-subsequences/)
+
+## Approach: Backtracking + Set
+
+- Use recursion to explore two choices for each element: include it or skip it.
+- Include an element only if the subsequence remains non-decreasing.
+- Store subsequences of length greater than one in a `set<vector<int>>` to eliminate duplicates.
+- Copy the unique subsequences into the answer vector.
+
+## Code
+
+```cpp
+class Solution {
+public:
+    set<vector<int>> st;
+
+    void find_Subsequences(vector<int>& nums, vector<int>& temp,
+                           int curr, int prev) {
+        if (curr >= nums.size()) {
+            if (temp.size() > 1) st.insert(temp);
+            return;
+        }
+
+        if (prev == -1 || nums[curr] >= nums[prev]) {
+            temp.push_back(nums[curr]);
+            find_Subsequences(nums, temp, curr + 1, curr);
+            temp.pop_back();
+        }
+
+        find_Subsequences(nums, temp, curr + 1, prev);
+    }
+
+    vector<vector<int>> findSubsequences(vector<int>& nums) {
+        vector<int> temp;
+        vector<vector<int>> ans;
+
+        st.clear();
+        find_Subsequences(nums, temp, 0, -1);
+
+        for (const auto& it : st) {
+            ans.push_back(it);
+        }
+
+        return ans;
+    }
+};
+```
+
+## Complexity Analysis
+
+Let \(n\) be the length of `nums`.
+
+- **Time Complexity:** Approximately \(O(2^n \cdot n \log(2^n))\) as an upper bound for generating subsequences and inserting them into the set.
+- **Space Complexity:** \(O(2^n \cdot n)\) for storing unique subsequences, with \(O(n)\) additional recursion and temporary-vector space.
+
+The set-based approach is correct, though a local `unordered_set<int>` at each recursion level can avoid duplicate branches and eliminate the need for a global set.
