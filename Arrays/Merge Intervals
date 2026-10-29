@@ -1,0 +1,42 @@
+## [Merge Intervals](https://leetcode.com/problems/merge-intervals/)
+
+### Approach: Sorting + Greedy
+
+First, sort the intervals in ascending order based on their starting points. Then, traverse the intervals and compare each interval with the last interval in the result vector.
+
+- If the result vector is empty or the current interval does not overlap with the last merged interval, add it to the result.
+- Otherwise, merge the overlapping intervals by updating the ending point to the maximum of both ending points.
+
+Finally, return the merged intervals.
+
+### Code
+
+```cpp
+class Solution {
+public:
+    vector<vector<int>> merge(vector<vector<int>>& intervals) {
+        int n = intervals.size();
+        sort(intervals.begin(), intervals.end());
+
+        vector<vector<int>> ans;
+
+        for(int i = 0; i < n; i++) {
+            if(ans.empty() || ans.back()[1] < intervals[i][0]) {
+                ans.push_back(intervals[i]);
+            } else {
+                if(ans.back()[1] >= intervals[i][0])
+                    ans.back()[1] = max(ans.back()[1], intervals[i][1]);
+            }
+        }
+
+        return ans;
+    }
+};
+```
+
+### Complexity Analysis
+
+- **Time Complexity:** \(O(N \log N)\), due to sorting. Traversing and merging intervals takes \(O(N)\).
+- **Space Complexity:** \(O(N)\) for storing the merged intervals in the result vector.
+
+Here, \(N\) is the number of intervals.
