@@ -1,0 +1,94 @@
+# [3970. Shortest Path With At Most K Consecutive Identical Characters](https://leetcode.com/problems/shortest-path-with-at-most-k-consecutive-identical-characters/)
+
+## Approach: Dijkstra's Algorithm + State Tracking
+
+### Theory
+
+We are given a directed weighted graph, a string `labels`, and an integer `k`. We need to find the minimum total edge weight from node `0` to node `n-1`, such that the path contains at most `k` consecutive identical characters.
+
+A normal Dijkstra algorithm is insufficient because reaching the same node with different consecutive character counts can affect future path validity.
+
+Therefore, we use **State-Based Dijkstra**.
+
+### Algorithm
+
+1. Build an adjacency list to represent the directed weighted graph.
+2. Maintain a 2D distance array `dist[node][cnt]`, where:
+   - `node` represents the current node.
+   - `cnt` represents the number of consecutive occurrences of the current node's character.
+3. Use a min-heap (priority queue) to process states in increasing order of distance.
+4. Initially, push `{0, 0, 1}` into the priority queue, representing distance `0`, node `0`, and consecutive count `1`.
+5. For every adjacent node:
+   - If its label matches the current node's label, increment the consecutive count.
+   - Otherwise, reset the count to `1`.
+6. If the new count exceeds `k`, skip that transition.
+7. Otherwise, update the distance if a shorter path is found and push the new state into the priority queue.
+8. Return the minimum distance when the destination is reached. If no valid path exists, return `-1`.
+
+**Key Observation:** We don't need to store the previous character separately because the last character is always `labels[node]`.
+
+## C++ Code
+
+```cpp
+class Solution {
+public:
+    int shortestPath(int n, vector<vector<int>>& edges, string labels, int k) {
+        vector<vector<pair<int,int>>> adj(n);
+
+        for(auto &edge : edges) {
+            int u = edge[0], v = edge[1], w = edge[2];
+            adj[u].push_back({v,w});
+        }
+
+        vector<vector<long long>> dist(n,vector<long long>(k + 1,LLONG_MAX));
+
+        priority_queue<
+            tuple<long long,int,int>,
+            vector<tuple<long long,int,int>>,
+            greater<tuple<long long,int,int>>
+        > pq;
+
+        dist[0][1] = 0;
+        pq.push({0,0,1});
+
+        while(!pq.empty()) {
+            auto [d,node,cnt] = pq.top();
+            pq.pop();
+
+            if(d != dist[node][cnt]) continue;
+
+            if(node == n - 1) return (int)d;
+
+            for(auto &[next,weight] : adj[node]) {
+                int new_cnt = (labels[node] == labels[next]) ? cnt + 1 : 1;
+
+                if(new_cnt > k) continue;
+
+                long long new_dist = d + weight;
+
+                if(new_dist < dist[next][new_cnt]) {
+                    dist[next][new_cnt] = new_dist;
+                    pq.push({new_dist,next,new_cnt});
+                }
+            }
+        }
+
+        return -1;
+    }
+};
+```
+
+## Complexity Analysis
+
+Let `n` be the number of nodes, `m` be the number of edges, and `k` be the maximum allowed consecutive identical characters.
+
+- **Time Complexity:** `O((n + m) * k * log(n * k))` — Each node can have up to `k` different states, and Dijkstra processes these states using a min-heap.
+- **Space Complexity:** `O(n * k + m)` — The adjacency list requires `O(n + m)` space, while the distance array requires `O(n * k)` space.
+
+## Key Concepts
+
+- Dijkstra's Algorithm
+- Graph Traversal
+- Priority Queue (Min Heap)
+- State-Based Shortest Path
+- Dynamic State Tracking
