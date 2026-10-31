@@ -1,0 +1,76 @@
+Twisted Mirror Path Count
+LeetCode Problem
+Approach: Recursion + Memoization (Dynamic Programming)
+Intuition
+We use recursion with memoization to count all valid paths from the top-left corner to the bottom-right corner.
+
+At every cell, we maintain a boolean variable right to represent the direction in which the robot entered the current cell:
+- true: Robot entered while moving right.
+- false: Robot entered while moving down.
+There are two possible types of cells:
+1. Empty cell (0): The robot can move either right or down.
+2. Mirror cell (1): The robot gets reflected depending on its incoming direction:
+   - Entering while moving right redirects the robot down.
+   - Entering while moving down redirects the robot right.
+We use a 3D DP array:
+
+dp[row][col][right]
+
+This stores the number of valid paths from a particular cell with a given incoming direction.
+C++ Code  
+
+class Solution {
+public:
+    const int MOD = 1e9 + 7;
+    int dp[500][500][2];
+
+    int solve(vector<vector<int>>& grid, int row, int col, bool right) {
+        if(row < 0 || col < 0 || row >= grid.size() || col >= grid[0].size())
+            return 0;
+
+        if(row == grid.size()-1 && col == grid[0].size()-1)
+            return 1;
+
+        if(dp[row][col][right] != -1)
+            return dp[row][col][right];
+
+        long long ans = 0;
+
+        if(grid[row][col] == 1) {
+            if(right)
+                ans += solve(grid,row+1,col,false);
+            else
+                ans += solve(grid,row,col+1,true);
+        }
+        else {
+            ans += solve(grid,row,col+1,true);
+            ans += solve(grid,row+1,col,false);
+        }
+
+        return dp[row][col][right] = ans % MOD;
+    }
+
+    int uniquePaths(vector<vector<int>>& grid) {
+        memset(dp,-1,sizeof(dp));
+
+        if(grid[0][0] == 0)
+            return solve(grid,0,0,true);
+
+        return (solve(grid,0,0,true) + solve(grid,0,0,false)) % MOD;
+    }
+};
+
+Complexity Analysis
+Let m be the number of rows and n be the number of columns.
+- Time Complexity: \(O(m \times n)\)
+  
+  Each cell has two possible direction states, and each state is calculated only once.
+- Space Complexity: \(O(m \times n)\)
+  
+  The DP array requires \(O(m \times n \times 2)\) space, along with recursion stack space.
+Important Observations
+- Direction is an important part of the DP state because mirror behavior depends on the incoming direction.
+- We don't need a visited array because the robot can only move right or down, so cycles are impossible.
+- Memoization avoids recalculating the same cell and direction combination.
+- Modulo is applied to prevent the answer from becoming too large.
+Important correction before submitting: Your starting-cell handling needs one more adjustment. If (0,0) is a mirror, the robot's initial attempted direction is reflected immediately. Your two recursive calls currently count both initial directions, but the two calls must be combined using long long before modulo to avoid overflow:
