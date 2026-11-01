@@ -1,0 +1,117 @@
+# N-Queens II
+
+**LeetCode Problem:** [N-Queens II](https://leetcode.com/problems/n-queens-ii/)
+
+## Approach: Backtracking
+
+### Intuition
+
+The goal is to place `N` queens on an `N x N` chessboard such that no two queens attack each other.
+
+A queen can attack another queen horizontally, vertically, and diagonally.
+
+We use **Backtracking** to explore all possible valid arrangements.
+
+### Algorithm
+
+1. Start placing queens row by row.
+2. For every row, try placing a queen in each column.
+3. Before placing a queen, check whether the position is valid:
+   - Check the entire column.
+   - Check the upper-left diagonal.
+   - Check the upper-right diagonal.
+   - Check the remaining directions if needed.
+4. If the position is valid:
+   - Place the queen by marking the cell as `1`.
+   - Recursively move to the next row.
+   - After recursion, remove the queen (backtrack).
+5. When all `N` queens are placed, increment the answer count.
+
+Since we place exactly one queen in each row, row conflicts are automatically avoided.
+
+## C++ Solution
+
+```cpp
+class Solution {
+public:
+
+    bool isValid(vector<vector<int>>& board, int row, int col) {
+        int r = board.size(), c = r;
+
+        for(int i = 0; i < r; i++)
+            if(board[i][col] == 1)return false;
+
+        for(int i = 0; i < c; i++)
+            if(board[row][i] == 1)return false;
+
+        for(int i = row, j = col; i >= 0 && j >= 0; i--, j--)
+            if(board[i][j] == 1)return false;
+
+        for(int i = row, j = col; i < r && j < c; i++, j++)
+            if(board[i][j] == 1)return false;
+
+        for(int i = row, j = col; i >= 0 && j < c; i--, j++)
+            if(board[i][j] == 1)return false;
+
+        for(int i = row, j = col; i < r && j >= 0; i++, j--)
+            if(board[i][j] == 1)return false;
+
+        return true;
+    }
+
+    void solve(vector<vector<int>>& board, int queen, int& count, int row) {
+        if(queen == 0) {
+            count++;
+            return;
+        }
+
+        for(int col = 0; col < board.size(); col++) {
+            if(isValid(board, row, col)) {
+                board[row][col] = 1;
+
+                solve(board, queen - 1, count, row + 1);
+
+                board[row][col] = 0;
+            }
+        }
+    }
+
+    int totalNQueens(int n) {
+        vector<vector<int>> board(n, vector<int>(n, 0));
+
+        int count = 0;
+        solve(board, n, count, 0);
+
+        return count;
+    }
+};
+```
+
+## Complexity Analysis
+
+- **Time Complexity:** Approximately \(O(N!)\) with backtracking and pruning. Each row explores available columns, and invalid arrangements are discarded.
+- **Space Complexity:** \(O(N^2)\) for the chessboard and \(O(N)\) for the recursion stack.
+
+## Example
+
+**Input:**
+```text
+n = 4
+```
+
+**Output:**
+```text
+2
+```
+
+**Explanation:**
+
+There are two distinct ways to place four queens on a 4 x 4 chessboard such that no two queens attack each other.
+
+## Key Concepts
+
+- Backtracking
+- Recursion
+- 2D Matrix Traversal
+- Diagonal Checking
+- Constraint Validation
