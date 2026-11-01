@@ -1,0 +1,65 @@
+# Minimum Moves to Equal Array Elements
+
+**LeetCode Problem:** [Minimum Moves to Equal Array Elements](https://leetcode.com/problems/minimum-moves-to-equal-array-elements/)
+
+## Approach: Mathematical Observation
+
+### Intuition
+The key observation is that incrementing `n - 1` elements by `1` is equivalent to decrementing the remaining one element by `1`.
+
+Instead of incrementing `n - 1` elements, we can think of decrementing one element in each move.
+
+To make all elements equal using the minimum number of moves:
+
+1. Find the minimum element in the array.
+2. Calculate the sum of all elements.
+3. The minimum number of moves is the difference between the total sum and the sum we would have if every element were equal to the minimum element.
+
+### C++ Solution
+
+```cpp
+class Solution {
+public:
+    int minMoves(vector<int>& nums) {
+        int Total = 0;
+        int n = nums.size();
+        int mini = INT_MAX;
+
+        for(const int& num : nums) {
+            Total += num;
+            mini = min(mini, num);
+        }
+
+        return Total - (n * mini);
+    }
+};
+```
+
+### Complexity Analysis
+
+- **Time Complexity:** \(O(n)\) — We traverse the array once to calculate the sum and find the minimum element.
+- **Space Complexity:** \(O(1)\) — We use only a constant amount of extra space.
+
+### Example
+
+**Input:**
+```text
+nums = [1, 2, 3]
+```
+
+**Calculation:**
+
+- Total Sum = 1 + 2 + 3 = 6
+- Minimum Element = 1
+- Array Size = 3
+
+\[
+6 - (3 \times 1) = 3
+\]
+
+**Output:**
+```text
+3
+```
+
+**Explanation:** We need 3 moves to make all elements equal to 1 (conceptually decrementing one element at a time).
