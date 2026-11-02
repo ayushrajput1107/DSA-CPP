@@ -1,0 +1,76 @@
+# [Insert Interval](https://leetcode.com/problems/insert-interval/)
+
+## Approach: Three-Pass Traversal (Greedy)
+
+### Intuition
+
+We are given a sorted list of non-overlapping intervals and a new interval that needs to be inserted.
+
+Instead of inserting the interval and sorting everything again, we can solve the problem in a single traversal by handling three cases:
+
+1. **Intervals before the new interval:** If the current interval ends before the new interval starts, add it directly to the answer.
+2. **Overlapping intervals:** If the current interval overlaps with the new interval, merge them by updating the starting and ending boundaries.
+3. **Intervals after the new interval:** Once all overlapping intervals are merged, add the remaining intervals directly.
+
+### Algorithm
+
+1. Initialize an empty answer vector and a pointer `i = 0`.
+2. Traverse and add all intervals whose ending value is smaller than `newInterval[0]`.
+3. Traverse overlapping intervals and update:
+   - `newInterval[0]` with the minimum starting value.
+   - `newInterval[1]` with the maximum ending value.
+4. Push the merged `newInterval` into the answer.
+5. Add all remaining intervals.
+6. Return the answer.
+
+### C++ Code
+
+```cpp
+class Solution {
+public:
+    vector<vector<int>> insert(vector<vector<int>>& intervals, vector<int>& newInterval) {
+        vector<vector<int>> ans;
+        int i = 0;
+        int n = intervals.size();
+
+        // Add intervals before newInterval
+        while(i < n && intervals[i][1] < newInterval[0]){
+            ans.push_back(intervals[i]);
+            i++;
+        }
+
+        // Merge overlapping intervals
+        while(i < n && intervals[i][0] <= newInterval[1]){
+            newInterval[0] = min(intervals[i][0], newInterval[0]);
+            newInterval[1] = max(intervals[i][1], newInterval[1]);
+            i++;
+        }
+
+        // Add the merged interval
+        ans.push_back(newInterval);
+
+        // Add remaining intervals
+        while(i < n){
+            ans.push_back(intervals[i]);
+            i++;
+        }
+
+        return ans;
+    }
+};
+```
+
+### Complexity Analysis
+
+- **Time Complexity:** O(n)
+  - We traverse the intervals at most once.
+  - Each interval is processed only once.
+
+- **Space Complexity:** O(n)
+  - We use an additional answer vector to store the resulting intervals.
+
+### Key Observation
+
+Since the given intervals are already sorted and non-overlapping, there is no need to sort them again.
+
+We can efficiently insert and merge the new interval in a single traversal using the Greedy approach.
