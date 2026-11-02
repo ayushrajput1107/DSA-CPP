@@ -1,0 +1,61 @@
+# [Minimum Moves to Equal Array Elements II](https://leetcode.com/problems/minimum-moves-to-equal-array-elements-ii/)
+
+## Approach: Sorting + Median
+
+### Intuition
+The goal is to make all elements equal using the minimum number of moves, where one move increments or decrements an element by 1.
+
+The optimal value to make every element equal is the **median** of the array.
+
+Why median?
+- If we choose a value smaller than the median, more moves are required for larger elements.
+- If we choose a value greater than the median, more moves are required for smaller elements.
+- The median minimizes the sum of absolute differences between all elements and the target value.
+
+### Algorithm
+1. Sort the array in ascending order.
+2. Find the median using `nums[n / 2]`.
+3. Iterate through the array and calculate the absolute difference between each element and the median.
+4. Add all differences to get the minimum number of moves.
+5. Return the total count.
+
+### C++ Code
+
+```cpp
+class Solution {
+public:
+    int minMoves2(vector<int>& nums) {
+        sort(begin(nums), end(nums));
+
+        int n = nums.size();
+        int mid = n / 2;
+        int pivot = nums[mid];
+
+        int count = 0;
+
+        for (const int& num : nums) {
+            count += abs(num - pivot);
+        }
+
+        return count;
+    }
+};
+```
+
+### Complexity Analysis
+
+- **Time Complexity:** O(n log n)
+  - Sorting takes O(n log n).
+  - Finding the median takes O(1).
+  - Traversing the array takes O(n).
+
+- **Space Complexity:** O(1) auxiliary space, excluding the sorting algorithm's internal stack space.
+
+### Key Concept
+The median minimizes the sum of absolute differences:
+
+\[
+\text{Minimum Moves} = \sum_{i=0}^{n-1}|nums[i]-median|
+\]
+
+**Important:** For this problem, sorting followed by choosing the median gives the optimal answer.
