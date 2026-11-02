@@ -1,0 +1,76 @@
+# [Word Break](https://leetcode.com/problems/word-break/)
+
+## Approach: Recursion + Memoization (Top-Down DP)
+
+### Intuition
+
+We are given a string `s` and a dictionary of words. We need to determine whether the string can be segmented into a sequence of one or more dictionary words.
+
+We use recursion to explore different possible prefixes of the string and check whether they exist in the dictionary.
+
+To optimize the solution, we use **Memoization (DP)** so that we don't calculate the same index multiple times.
+
+### Algorithm
+
+1. Store all dictionary words in an `unordered_set` for efficient searching.
+2. Define a recursive function `solve(s, idx)`:
+   - If `idx` reaches the end of the string, return `true`.
+   - If `dp[idx]` is already calculated, return the stored result.
+3. Try different substring lengths starting from the current index.
+4. Check whether the substring exists in the dictionary.
+5. If it exists, recursively check the remaining string starting from `idx + len`.
+6. If any recursive call returns `true`, store and return `1`.
+7. If no valid segmentation is found, store and return `0`.
+
+### C++ Code
+
+```cpp
+class Solution {
+public:
+    unordered_set<string> st;
+    int dp[301];
+
+    bool solve(string& s, int idx) {
+        if(idx >= s.length()) return true;
+
+        if(dp[idx] != -1) return dp[idx];
+
+        for(int len = 1; len <= s.length() - idx; len++) {
+            string temp = s.substr(idx, len);
+
+            if(st.count(temp) && solve(s, idx + len)) {
+                return dp[idx] = 1;
+            }
+        }
+
+        return dp[idx] = 0;
+    }
+
+    bool wordBreak(string s, vector<string>& wordDict) {
+        st.clear();
+        memset(dp, -1, sizeof(dp));
+
+        for(const string& word : wordDict) {
+            st.insert(word);
+        }
+
+        return solve(s, 0);
+    }
+};
+```
+
+### Complexity Analysis
+
+Let:
+- `n` = length of the input string.
+- `m` = maximum length of a dictionary word.
+
+- **Time Complexity:** O(n² × n) in the worst case due to substring creation and hashing, assuming substring hashing takes linear time.
+- **Space Complexity:** O(n + total dictionary storage) for the DP array, recursion stack, and unordered set, excluding temporary substring allocations.
+
+### Key Concepts
+
+- **Recursion:** Explore different ways to divide the string.
+- **Memoization:** Avoid recomputing results for previously visited indices.
+- **Unordered Set:** Provides average O(1) lookup for dictionary words.
+- **Dynamic Programming:** Store whether the remaining substring starting at an index can be segmented successfully.
