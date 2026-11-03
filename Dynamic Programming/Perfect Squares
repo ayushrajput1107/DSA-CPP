@@ -1,0 +1,99 @@
+# LeetCode: Perfect Squares
+
+**Problem:** [Perfect Squares](https://leetcode.com/problems/perfect-squares/)
+
+## Approach: Recursion + Memoization (Top-Down DP)
+
+### Intuition
+
+The goal is to find the minimum number of perfect squares whose sum is equal to the given number `n`.
+
+First, generate all perfect squares less than or equal to `n` and store them in a vector.
+
+We use recursion to try every possible perfect square and find the minimum number of selections required to reach the target.
+
+At every recursive call:
+
+1. If `sum > target`, return `INT_MAX` because the current sum exceeds the target.
+2. If `sum == target`, return `0` because we have reached the target.
+3. Try adding every available perfect square.
+4. Add `1` to count the current selection.
+5. Take the minimum among all possible choices.
+
+### DP State
+
+`dp[sum]` represents the minimum number of perfect squares required to reach the target from the current sum.
+
+### C++ Code
+
+```cpp
+class Solution {
+public:
+
+    int dp[10001];
+
+    int solve(int target, vector<int>& nums, int sum) {
+        if(sum > target) return INT_MAX;
+        if(sum == target) return 0;
+
+        if(dp[sum] != -1) return dp[sum];
+
+        int ans = INT_MAX;
+
+        for(int i = 0; i < nums.size(); i++) {
+            int count = solve(target, nums, sum + nums[i]);
+
+            if(count != INT_MAX) count += 1;
+
+            ans = min(ans, count);
+        }
+
+        return dp[sum] = ans;
+    }
+
+    int numSquares(int n) {
+        vector<int> nums;
+        memset(dp, -1, sizeof(dp));
+
+        for(int i = 1; i * i <= n; i++) {
+            nums.push_back(i * i);
+        }
+
+        return solve(n, nums, 0);
+    }
+};
+```
+
+### Complexity Analysis
+
+- **Time Complexity:** `O(n * sqrt(n))`
+  - There are at most `n` different DP states.
+  - Each state iterates through at most `sqrt(n)` perfect squares.
+
+- **Space Complexity:** `O(n)`
+  - DP array requires `O(n)` space.
+  - Recursion stack can also take up to `O(n)` space.
+
+### Example
+
+**Input:**
+```cpp
+n = 12
+```
+
+**Output:**
+```cpp
+3
+```
+
+**Explanation:**
+
+The minimum number of perfect squares required to make `12` is:
+
+`12 = 4 + 4 + 4`
+
+Therefore, the answer is `3`.
+
+### Key Takeaway
+
+This problem follows the **Unbounded Knapsack pattern** because we can use the same perfect square multiple times. Recursion with memoization avoids recalculating previously solved states and optimizes the solution.
