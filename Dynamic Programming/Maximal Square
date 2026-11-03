@@ -1,0 +1,49 @@
+LeetCode: Maximal Square
+Problem: Maximal Square
+Approach: Dynamic Programming (2D DP)
+We use a 2D DP array where dp[i][j] represents the maximum side length of a square whose bottom-right corner is at position (i, j).
+
+If the current cell contains '1', we calculate the minimum of its three neighboring cells (top, left, and top-left) and add 1.
+
+DP Transition:
+dp[i][j] = 1 + \min(dp[i-1][j], dp[i][j-1], dp[i-1][j-1])
+
+If the current cell contains '0', its DP value remains 0.
+
+We maintain maxi to store the maximum side length found and return its square as the maximum area.
+C++ Code
+class Solution {
+public:
+    int maximalSquare(vector<vector<char>>& matrix) {
+        int row = matrix.size();
+        int col = matrix[0].size();
+
+        vector<vector<int>> area(row, vector<int>(col, 0));
+        int maxi = 0;
+
+        for(int i = 0; i < row; i++) {
+            for(int j = 0; j < col; j++) {
+
+                if(i - 1 >= 0 && j - 1 >= 0 && matrix[i][j] == '1') {
+                    area[i][j] = 1 + min({
+                        area[i-1][j],
+                        area[i-1][j-1],
+                        area[i][j-1]
+                    });
+                }
+                else {
+                    matrix[i][j] == '1' ? area[i][j] = 1 : area[i][j] = 0;
+                }
+
+                maxi = max(maxi, area[i][j]);
+            }
+        }
+
+        return maxi * maxi;
+    }
+};
+
+
+Complexity Analysis
+- Time Complexity: \(O(m \times n)\), as we traverse every cell exactly once.
+- Space Complexity: \(O(m \times n)\), for the 2D DP array.
