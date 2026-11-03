@@ -1,0 +1,35 @@
+LeetCode: Minimum Moves to Equal Array Elements III
+Problem: Minimum Moves to Equal Array Elements III
+Approach: Greedy
+Intuition
+The goal is to make all elements of the array equal using the minimum number of moves.
+
+In this problem, one move allows us to increase or decrease an element by 1.
+
+To minimize the total number of moves, we can make every element equal to the maximum element in the array.
+- Find the maximum element using max_element().
+- Calculate the difference between the maximum element and every other element.
+- Add all differences to get the minimum number of moves.
+C++ Code
+class Solution {
+public:
+    int minMoves(vector<int>& nums) {
+        int maxi = *max_element(begin(nums), end(nums));
+
+        int count = 0;
+
+        for (const int& num : nums) {
+            count += (maxi - num);
+        }
+
+        return count;
+    }
+};
+
+
+Complexity Analysis
+- Time Complexity: \(O(n)\)
+  - Finding the maximum element takes \(O(n)\).
+  - Traversing the array to calculate the total moves takes \(O(n)\).
+- Space Complexity: \(O(1)\)
+  - Only a few extra variables are used.
