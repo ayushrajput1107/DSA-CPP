@@ -1,0 +1,107 @@
+# LeetCode: Edit Distance
+
+**Problem:** [Edit Distance](https://leetcode.com/problems/edit-distance/)
+
+## Approach: Recursion + Memoization (Top-Down DP)
+
+### Intuition
+
+The goal is to convert `word1` into `word2` using the minimum number of operations.
+
+We are allowed to perform three operations:
+
+1. **Insert:** Insert a character into `word1`.
+2. **Delete:** Delete a character from `word1`.
+3. **Replace:** Replace a character in `word1` with another character.
+
+We use two pointers `i` and `j` to traverse both strings.
+
+- If both characters are equal, move both pointers forward without performing any operation.
+- If characters are different, explore all three possible operations and choose the minimum cost.
+
+### DP State
+
+`dp[i][j]` represents the minimum number of operations required to convert the remaining substring of `word1` starting at index `i` into the remaining substring of `word2` starting at index `j`.
+
+### Base Cases
+
+- If `i >= word1.length()`, all remaining characters of `word2` must be inserted.
+- If `j >= word2.length()`, all remaining characters of `word1` must be deleted.
+
+### DP Transitions
+
+If characters match:
+
+`solve(i + 1, j + 1)`
+
+If characters do not match:
+
+- Insert: `1 + solve(i, j + 1)`
+- Delete: `1 + solve(i + 1, j)`
+- Replace: `1 + solve(i + 1, j + 1)`
+
+We take the minimum among all three operations.
+
+## C++ Code
+
+```cpp
+class Solution {
+public:
+    int dp[501][501];
+
+    int solve(string& word1, string& word2, int i, int j) {
+        if(i >= word1.length()) return word2.length() - j;
+        if(j >= word2.length()) return word1.length() - i;
+
+        if(word1[i] == word2[j])
+            return solve(word1, word2, i + 1, j + 1);
+
+        if(dp[i][j] != -1) return dp[i][j];
+
+        int insert = solve(word1, word2, i, j + 1);
+        int del = solve(word1, word2, i + 1, j);
+        int replace = solve(word1, word2, i + 1, j + 1);
+
+        return dp[i][j] = 1 + min({replace, insert, del});
+    }
+
+    int minDistance(string word1, string word2) {
+        memset(dp, -1, sizeof(dp));
+        return solve(word1, word2, 0, 0);
+    }
+};
+```
+
+## Complexity Analysis
+
+Let `m` be the length of `word1` and `n` be the length of `word2`.
+
+- **Time Complexity:** `O(m × n)` because each DP state is calculated only once, and each state performs constant work.
+- **Space Complexity:** `O(m × n)` for the DP array, along with `O(m + n)` recursion stack space.
+
+## Example
+
+**Input:**
+```cpp
+word1 = "horse"
+word2 = "ros"
+```
+
+**Output:**
+```cpp
+3
+```
+
+**Explanation:**
+
+The conversion can be performed using three operations:
+
+1. horse → rorse (Replace `h` with `r`)
+2. rorse → rose (Delete `r`)
+3. rose → ros (Delete `e`)
+
+Therefore, the minimum number of operations required is `3`.
+
+## Key Takeaway
+
+Edit Distance is a classic 2D DP problem where we compare two strings using two pointers. When characters differ, we explore Insert, Delete, and Replace operations and choose the minimum cost. Memoization avoids recalculating previously solved states.
