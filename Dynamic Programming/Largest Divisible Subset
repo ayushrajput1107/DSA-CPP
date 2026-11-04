@@ -1,0 +1,70 @@
+# Largest Divisible Subset
+
+**Problem:** [LeetCode 368](https://leetcode.com/problems/largest-divisible-subset/)
+
+## Approach: Dynamic Programming (LIS Pattern)
+
+Sort the array in ascending order. Use a DP array to store the length of the largest divisible subset ending at each index.
+
+Maintain a `prev_index` array to track the previous element in the subset and reconstruct the answer.
+
+For every pair of indices `j` and `i`, if `nums[i] % nums[j] == 0`, we can extend the subset ending at `j`.
+
+Update the DP state if a longer subset is found. Finally, reconstruct the largest divisible subset using `prev_index`.
+
+## C++ Code
+
+```cpp
+class Solution {
+public:
+    vector<int> largestDivisibleSubset(vector<int>& nums) {
+        sort(begin(nums), end(nums));
+
+        int n = nums.size();
+
+        vector<int> dp(n, 0);
+        vector<int> prev_index(n, -1);
+
+        int last_index = 0;
+        int maxL = 0;
+
+        for(int i = 1; i < n; i++) {
+            for(int j = 0; j < i; j++) {
+                if(nums[i] % nums[j] == 0) {
+                    if(dp[i] < dp[j] + 1) {
+                        dp[i] = dp[j] + 1;
+                        prev_index[i] = j;
+                    }
+
+                    if(dp[i] > maxL) {
+                        maxL = dp[i];
+                        last_index = i;
+                    }
+                }
+            }
+        }
+
+        vector<int> res;
+
+        while(last_index != -1) {
+            res.push_back(nums[last_index]);
+            last_index = prev_index[last_index];
+        }
+
+        return res;
+    }
+};
+```
+
+## Complexity Analysis
+
+- **Time Complexity:** O(n²)
+- **Space Complexity:** O(n)
+
+## Example
+
+Input: `nums = [1, 2, 4, 8]`
+
+Output: `[1, 2, 4, 8]`
+
+Explanation: Each element is divisible by the previous element, so the entire array forms the largest divisible subset.
