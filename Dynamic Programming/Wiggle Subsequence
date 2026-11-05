@@ -1,0 +1,64 @@
+376. Wiggle Subsequence
+LeetCode: Wiggle Subsequence
+
+Approach: Recursion + Memoization (DP)
+Theory
+The goal is to find the length of the longest subsequence in which the differences between consecutive elements strictly alternate between positive and negative.
+
+We use recursion with memoization to avoid recalculating the same states.
+DP State
+dp[curr][prev + 1][large]
+- curr: Current index being considered.
+- prev: Index of the previously selected element. Initially -1.
+- large: Represents the expected direction of the next difference.
+  - true: The current element must be greater than the previous element.
+  - false: The current element must be smaller than the previous element.
+Transitions
+At every index, we have two choices:
+1. Take: If the current element satisfies the required condition, include it in the subsequence and toggle the direction.
+2. Not Take: Skip the current element and move to the next index without changing the previous index or direction.
+Initially, we try both possible directions because the first difference can be either positive or negative.
+
+The final answer is the maximum of both results.
+Code
+class Solution {
+public:
+    int dp[1001][1001][2];
+
+    int solve(vector<int>& nums, int curr, int prev, bool large) {
+        if (curr >= nums.size()) return 0;
+
+        if (dp[curr][prev + 1][large] != -1)
+            return dp[curr][prev + 1][large];
+
+        int take = 0;
+
+        if (large && (prev == -1 || nums[prev] < nums[curr])) {
+            take = 1 + solve(nums, curr + 1, curr, !large);
+        }
+
+        if (!large && (prev == -1 || nums[curr] < nums[prev])) {
+            take = 1 + solve(nums, curr + 1, curr, !large);
+        }
+
+        int not_take = solve(nums, curr + 1, prev, large);
+
+        return dp[curr][prev + 1][large] = max(take, not_take);
+    }
+
+    int wiggleMaxLength(vector<int>& nums) {
+        memset(dp, -1, sizeof(dp));
+
+        int ans1 = solve(nums, 0, -1, true);
+        int ans2 = solve(nums, 0, -1, false);
+
+        return max(ans1, ans2);
+    }
+};
+
+
+Complexity Analysis
+- Time Complexity: \(O(n^2)\) — There are \(O(n^2 \times 2)\) states, and each state takes constant time.
+- Space Complexity: \(O(n^2)\) — For the DP array, with \(O(n)\) additional recursion stack space.
+Key Takeaway
+The important part of this problem is maintaining the expected direction of the next difference. Whenever we select an element, we toggle the direction using !large to ensure that the subsequence follows the wiggle pattern.
