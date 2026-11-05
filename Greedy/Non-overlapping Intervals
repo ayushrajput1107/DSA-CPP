@@ -1,0 +1,58 @@
+435. Non-overlapping Intervals
+LeetCode: Non-overlapping Intervals
+
+Approach: Greedy Algorithm + Sorting
+Theory
+The goal is to find the minimum number of intervals that must be removed so that the remaining intervals do not overlap.
+
+We use a Greedy approach to maximize the number of non-overlapping intervals.
+Algorithm
+1. First, sort the intervals in ascending order.
+2. Initialize count = 1 to consider the first interval.
+3. Maintain current_end, which stores the ending point of the previously selected interval.
+4. Traverse the remaining intervals:
+   - If overlapping: If intervals[i][0] < current_end, the current interval overlaps with the previous one.
+     - Keep the interval with the smaller ending point because it leaves more room for future intervals.
+     - Update current_end only if the current interval ends earlier.
+   - If non-overlapping: If intervals[i][0] >= current_end, select the current interval, increment count, and update current_end.
+5. Finally, return n - count, which represents the minimum number of intervals to remove.
+Code
+class Solution {
+public:
+    int eraseOverlapIntervals(vector<vector<int>>& intervals) {
+        int n = intervals.size();
+
+        sort(intervals.begin(), intervals.end());
+
+        int count = 1;
+        int current_end = intervals[0][1];
+
+        for (int i = 1; i < n; i++) {
+            if (intervals[i][0] < current_end) {
+
+                if (intervals[i][1] < current_end) {
+                    current_end = intervals[i][1];
+                }
+
+            }
+            else {
+                count++;
+                current_end = intervals[i][1];
+            }
+        }
+
+        return n - count;
+    }
+};
+
+
+Complexity Analysis
+Let n be the number of intervals.
+- Time Complexity: \(O(n \log n)\)
+  - Sorting takes \(O(n \log n)\).
+  - Traversing the intervals takes \(O(n)\).
+- Space Complexity: \(O(1)\) auxiliary space, excluding the sorting implementation's stack space.
+Key Takeaway
+The main greedy idea is to always keep the interval that ends earliest when two intervals overlap.
+
+This leaves maximum room for upcoming intervals and helps maximize the number of non-overlapping intervals.
