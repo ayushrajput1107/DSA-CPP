@@ -1,0 +1,55 @@
+# 624. Find the Distance Value Between Two Arrays
+
+**Problem Link:** [LeetCode 624 - Find the Distance Value Between Two Arrays](https://leetcode.com/problems/find-the-distance-value-between-two-arrays/)
+
+## Approach: Brute Force
+
+### Intuition
+We need to count the elements in `arr1` such that there is no element in `arr2` whose absolute difference is less than or equal to `d`.
+
+### Algorithm
+1. Initialize a variable `consider = 0` to store the answer.
+2. Traverse each element of `arr1`.
+3. For every element, traverse all elements of `arr2`.
+4. If `abs(arr1[i] - arr2[j]) <= d`, set `found = true` and break the inner loop.
+5. If no such element is found in `arr2`, increment `consider`.
+6. Return `consider`.
+
+## C++ Code
+
+```cpp
+class Solution {
+public:
+    int findTheDistanceValue(vector<int>& arr1, vector<int>& arr2, int d) {
+        int consider = 0;
+
+        for(int i = 0; i < arr1.size(); i++) {
+            bool found = false;
+
+            for(int j = 0; j < arr2.size(); j++) {
+                if(abs(arr1[i] - arr2[j]) <= d) {
+                    found = true;
+                    break;
+                }
+            }
+
+            if(!found) consider++;
+        }
+
+        return consider;
+    }
+};
+```
+
+## Complexity Analysis
+
+- **Time Complexity:** `O(n * m)`
+  - We traverse `arr1` and check every element of `arr2` in the worst case.
+- **Space Complexity:** `O(1)`
+  - Only constant extra space is used.
+
+## Key Takeaways
+- Used nested loops to compare elements of both arrays.
+- Used `abs()` to calculate absolute differences.
+- Used a boolean variable to track whether a valid element exists.
+- Used `break` to avoid unnecessary comparisons.
