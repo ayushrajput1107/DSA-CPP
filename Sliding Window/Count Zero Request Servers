@@ -1,0 +1,99 @@
+2747. Count Zero Request Servers
+Approach: Sorting + Sliding Window + Hash Map
+Intuition
+We are given n servers and their request logs. For each query, we need to count how many servers did not receive any requests during the time interval:
+\[
+[query - x,\ query]
+\]
+
+A server is considered active if it has at least one request within this interval.
+
+Instead of checking every log for every query, we can use sorting and the sliding window technique to process queries efficiently.
+Algorithm
+1. Sort logs in ascending order based on their timestamps (logs[i][1]).
+2. Store each query along with its original index so that we can restore the original order later.
+3. Sort the queries based on their values.
+4. Maintain two pointers:
+   - left: First log inside the current valid window.
+   - right: First log outside the current valid window.
+5. Use an unordered_map to maintain the frequency of each server in the current window.
+6. For every query:
+   - Add logs whose timestamp is less than or equal to query.
+   - Remove logs whose timestamp is less than query - x.
+   - The number of active servers is mp.size().
+   - The number of inactive servers is n - mp.size().
+7. Store the result at the original query index.
+C++ Code
+
+class Solution {
+public:
+    vector<int> countServers(int n, vector<vector<int>>& logs, int x, vector<int>& queries) {
+        int m = logs.size();
+        int q = queries.size();
+
+        sort(logs.begin(), logs.end(), [](vector<int>& a, vector<int>& b) {
+            return a[1] < b[1];
+        });
+
+        vector<pair<int,int>> temp;
+
+        for(int i = 0; i < q; i++){
+            temp.push_back({queries[i], i});
+        }
+
+        sort(temp.begin(), temp.end());
+
+        vector<int> ans(q);
+        unordered_map<int,int> mp;
+
+        int left = 0, right = 0;
+
+        for(auto &it : temp){
+            int val = it.first;
+            int idx = it.second;
+
+            while(right < m && logs[right][1] <= val){
+                mp[logs[right][0]]++;
+                right++;
+            }
+
+            while(left < m && logs[left][1] < val - x){
+                int server = logs[left][0];
+
+                mp[server]--;
+
+                if(mp[server] == 0){
+                    mp.erase(server);
+                }
+
+                left++;
+            }
+
+            ans[idx] = n - mp.size();
+        }
+
+        return ans;
+    }
+};
+
+
+
+Complexity Analysis
+Let:
+- m = number of logs
+- q = number of queries
+Operation	Complexity
+Sorting logs	\(O(m\log m)\)
+Sorting queries	\(O(q\log q)\)
+Sliding window	\(O(m+q)\) average
+Space	\(O(m+q+n)\)
+
+Overall Time Complexity:
+\[
+O(m\log m+q\log q)
+\]
+
+Overall Space Complexity:
+\[
+O(m+q+n)
+\]
