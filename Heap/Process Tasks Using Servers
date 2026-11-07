@@ -1,0 +1,117 @@
+# 1882. Process Tasks Using Servers
+
+[LeetCode Problem](https://leetcode.com/problems/process-tasks-using-servers/)
+
+## Approach: Greedy + Two Priority Queues
+
+### Intuition
+
+We are given servers with different weights and tasks that need to be assigned to available servers.
+
+The assignment follows two rules:
+1. Choose the server with the smallest weight.
+2. If multiple servers have the same weight, choose the server with the smallest index.
+
+To efficiently manage servers, we use two min-heaps:
+
+- **Available Servers (`pq`):** Stores `{weight, index}` of currently available servers. The smallest weight server gets the highest priority, followed by the smallest index.
+- **Busy Servers (`busy_servers`):** Stores `{available_time, {weight, index}}` of servers currently processing tasks. The server that becomes available earliest gets the highest priority.
+
+### Algorithm
+
+1. Initially, insert all servers into the available-server min-heap.
+2. Iterate through each task.
+3. Update `curr_time` using `max(curr_time, i)` because task `i` arrives at second `i`.
+4. Move all servers whose processing time has finished (`available_time <= curr_time`) from the busy heap to the available heap.
+5. If no server is available:
+   - Jump `curr_time` to the earliest available time from the busy heap.
+   - Move all servers that become free at that time into the available heap.
+6. Select the server with the smallest weight and index.
+7. Add its index to the answer.
+8. Calculate when the server will become available again:
+
+   `available_time = curr_time + tasks[i]`
+
+9. Insert the server into the busy heap and remove it from the available heap.
+10. Return the answer.
+
+## C++ Code
+
+```cpp
+class Solution {
+public:
+    vector<int> assignTasks(vector<int>& servers, vector<int>& tasks) {
+        int n = servers.size(), m = tasks.size();
+        vector<int> ans;
+
+        priority_queue<pair<int,int>, vector<pair<int,int>>, greater<pair<int,int>>> pq;
+
+        priority_queue<pair<int,pair<int,int>>, vector<pair<int,pair<int,int>>>, greater<pair<int,pair<int,int>>>> busy_servers;
+
+        for(int i = 0; i < n; i++) pq.push({servers[i], i});
+
+        int curr_time = 0;
+
+        for(int i = 0; i < m; i++) {
+
+            curr_time = max(curr_time, i);
+
+            while(!busy_servers.empty() && busy_servers.top().first <= curr_time) {
+                pq.push(busy_servers.top().second);
+                busy_servers.pop();
+            }
+
+            if(pq.empty()) curr_time = busy_servers.top().first;
+
+            while(!busy_servers.empty() && busy_servers.top().first <= curr_time) {
+                pq.push(busy_servers.top().second);
+                busy_servers.pop();
+            }
+
+            ans.push_back(pq.top().second);
+
+            long long time = curr_time + (long long)tasks[i];
+
+            busy_servers.push({time, pq.top()});
+
+            pq.pop();
+        }
+
+        return ans;
+    }
+};
+```
+
+## Complexity Analysis
+
+Let:
+- `n` = Number of servers
+- `m` = Number of tasks
+
+**Time Complexity:**
+
+- Building the available-server heap: `O(n log n)`
+- Each server enters and leaves the heaps at most once per task assignment.
+- Each task requires heap operations costing `O(log(n + m))` in the general bound.
+
+Overall:
+
+\[
+O(n\log n + m\log(n+m))
+\]
+
+**Space Complexity:**
+
+\[
+O(n+m)
+\]
+
+For the two heaps, at most `n` servers are stored at any time. The answer vector stores `m` indices.
+
+## Key Concepts
+
+- Greedy Algorithm
+- Priority Queue (Min-Heap)
+- Two Heaps
+- Simulation
+- Scheduling
