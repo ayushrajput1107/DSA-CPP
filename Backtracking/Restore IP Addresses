@@ -1,0 +1,100 @@
+# 93. Restore IP Addresses
+
+[LeetCode Problem](https://leetcode.com/problems/restore-ip-addresses/)
+
+## Approach: Backtracking (Recursion)
+
+### Intuition
+
+We are given a string containing digits and need to generate all possible valid IP addresses.
+
+A valid IP address consists of exactly **4 segments**, separated by dots (`.`).
+
+Each segment must satisfy:
+- It must contain at least one digit.
+- Its value must be between `0` and `255`.
+- It cannot contain leading zeros (except when the segment itself is `0`).
+
+We use recursion and backtracking to explore all possible ways to divide the string into four valid segments.
+
+### Algorithm
+
+1. Maintain an `index` to track the current position in the string.
+2. Maintain `num` to construct the current IP segment.
+3. Maintain a `temp` vector to store the completed segments.
+4. At each index:
+   - Include the current digit in `num`.
+   - If `num > 255`, stop exploring that branch.
+   - If `num != 0`, recursively extend the current segment. This prevents leading zeros.
+   - Store `num` in `temp` and recursively start constructing the next segment.
+   - Backtrack by removing the last segment from `temp`.
+5. When all characters are processed, check whether exactly 4 segments have been formed.
+6. If valid, join the segments using dots and add the resulting IP address to the answer.
+
+### C++ Code
+
+```cpp
+class Solution {
+public:
+    vector<string> ans;
+
+    void solve(string& s, int index, int num, vector<int>& temp) {
+        if(index >= s.length()) {
+            if(temp.size() != 4)return;
+
+            string res = "";
+
+            for(int i = 0; i < temp.size(); i++) {
+                res += to_string(temp[i]);
+
+                if(i != temp.size()-1) res += ".";
+            }
+
+            ans.push_back(res);
+            return;
+        }
+
+        num = (num * 10) + (s[index] - '0');
+
+        if(num > 255 || temp.size() > 4)return;
+
+        if(temp.size() < 4 && num != 0)
+            solve(s, index+1, num, temp);
+
+        temp.push_back(num);
+
+        solve(s, index+1, 0, temp);
+
+        temp.pop_back();
+    }
+
+    vector<string> restoreIpAddresses(string s) {
+        ans.clear();
+
+        if(s.length() < 4 || s.length() > 12)
+            return ans;
+
+        vector<int> temp;
+
+        solve(s, 0, 0, temp);
+
+        return ans;
+    }
+};
+```
+
+## Complexity Analysis
+
+Let `n` be the length of the input string.
+
+**Time Complexity:** \(O(3^n)\) as an upper bound for exploring possible partitions. Since a valid IP address has exactly four segments and each segment can contain at most three digits, the search is tightly bounded for this problem.
+
+**Space Complexity:** \(O(n)\) for recursion depth and the temporary segment vector, excluding the output storage.
+
+## Key Concepts
+
+- Recursion
+- Backtracking
+- String Manipulation
+- Pruning
+- Depth First Search (DFS)
