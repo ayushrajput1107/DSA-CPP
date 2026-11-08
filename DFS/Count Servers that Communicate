@@ -1,0 +1,78 @@
+1267. Count Servers that Communicate
+Approach: Brute Force + Visited Array
+Theory
+The problem is to count the number of servers that can communicate with at least one other server.
+
+Two servers can communicate if they are located in the same row or the same column.
+
+Steps:
+1. Traverse the entire grid and store the coordinates of all servers (grid[i][j] == 1) in a vector.
+2. Create a visited matrix to keep track of servers that have already been counted.
+3. For every server:
+   - Traverse its entire row and check whether another server exists.
+   - Traverse its entire column and check whether another server exists.
+4. If another server is found in the same row or column and has not been visited, mark it as visited and increment the answer.
+5. Return the total count.
+Code (C++)
+class Solution {
+public:
+    int countServers(vector<vector<int>>& grid) {
+        int row = grid.size(), col = grid[0].size();
+
+        vector<pair<int,int>> servers;
+
+        for(int i = 0; i < row; i++) {
+            for(int j = 0; j < col; j++) {
+                if(grid[i][j] == 1) {
+                    servers.push_back({i, j});
+                }
+            }
+        }
+
+        vector<vector<int>> vis(row, vector<int>(col, 0));
+
+        int countServer = 0;
+
+        for(const auto& it : servers) {
+            int r = it.first, c = it.second;
+
+            for(int i = 0; i < col; i++) {
+                if(grid[r][i] == 1 && !vis[r][i] && i != c) {
+                    vis[r][i] = 1;
+                    countServer++;
+                }
+            }
+
+            for(int i = 0; i < row; i++) {
+                if(grid[i][c] == 1 && !vis[i][c] && i != r) {
+                    vis[i][c] = 1;
+                    countServer++;
+                }
+            }
+        }
+
+        return countServer;
+    }
+};
+
+
+Complexity Analysis
+Let m be the number of rows, n be the number of columns, and k be the number of servers.
+- Time Complexity: \(O(m \times n + k(m+n))\)
+  - Traversing the grid takes \(O(m \times n)\).
+  - For every server, we traverse its row and column, taking \(O(m+n)\).
+- Space Complexity: \(O(m \times n + k)\)
+  - Visited matrix takes \(O(m \times n)\).
+  - Server coordinates take \(O(k)\).
+Important Note
+Your approach works, but it performs repeated row and column traversals.
+
+An optimized approach uses two frequency arrays:
+- rowCount[i] stores the number of servers in row i.
+- colCount[j] stores the number of servers in column j.
+A server communicates if:
+\[
+rowCount[i] > 1 \quad \text{or} \quad colCount[j] > 1
+\]
+
+This reduces the time complexity to \(O(m \times n)\) and auxiliary space to \(O(m+n)\).
