@@ -1,0 +1,59 @@
+# Out of Boundary Paths
+
+[**LeetCode 576. Out of Boundary Paths**](https://leetcode.com/problems/out-of-boundary-paths/)
+
+## Approach: Recursion + Memoization (Top-Down DP)
+
+The goal is to find the number of ways to move a ball out of an `m x n` grid within at most `maxMove` moves.
+
+At every position, the ball can move in four directions: up, down, left, and right.
+
+### Algorithm
+
+1. If `maxMove < 0`, return `0` because no moves are left.
+2. If the current position goes outside the grid, return `1` because we have found a valid path.
+3. Use a 3D DP array `dp[row][col][maxMove]` to store previously calculated results.
+4. Explore all four possible directions by decreasing `maxMove` by one.
+5. Add the results of all four recursive calls and take modulo `10^9 + 7`.
+6. Return the stored result to avoid recomputing overlapping subproblems.
+
+### Code
+
+```cpp
+class Solution {
+public:
+    const int MOD = 1e9 + 7;
+    int dp[51][51][51];
+
+    int total_paths(int m, int n, int maxMove, int row, int col) {
+        if(maxMove < 0) return 0;
+
+        if(row < 0 || col < 0 || row >= m || col >= n) return 1;
+
+        if(dp[row][col][maxMove] != -1)
+            return dp[row][col][maxMove];
+
+        long long Total = 0;
+
+        Total += total_paths(m, n, maxMove - 1, row - 1, col) % MOD;
+        Total += total_paths(m, n, maxMove - 1, row + 1, col) % MOD;
+        Total += total_paths(m, n, maxMove - 1, row, col + 1) % MOD;
+        Total += total_paths(m, n, maxMove - 1, row, col - 1) % MOD;
+
+        return dp[row][col][maxMove] = Total % MOD;
+    }
+
+    int findPaths(int m, int n, int maxMove, int startRow, int startColumn) {
+        memset(dp, -1, sizeof(dp));
+        return total_paths(m, n, maxMove, startRow, startColumn);
+    }
+};
+```
+
+## Complexity Analysis
+
+Let `m` be the number of rows, `n` be the number of columns, and `K` be the maximum number of moves.
+
+- **Time Complexity:** \(O(m \times n \times K)\) – Each DP state is calculated only once, and each state explores four directions.
+- **Space Complexity:** \(O(m \times n \times K)\) – For the 3D DP array, along with the recursion stack of depth \(O(K)\).
+
