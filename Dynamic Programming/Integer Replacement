@@ -1,0 +1,50 @@
+# Integer Replacement
+
+[**LeetCode 397. Integer Replacement**](https://leetcode.com/problems/integer-replacement/)
+
+## Approach: Recursion + Memoization (Top-Down DP)
+
+The goal is to reduce the given integer `n` to `1` using the minimum number of operations.
+
+The allowed operations are:
+- If `n` is even, replace it with `n / 2`.
+- If `n` is odd, replace it with either `n - 1` or `n + 1`.
+
+### Algorithm
+1. If `n == 1`, return `0` because no more operations are required.
+2. Use an `unordered_map` to store previously calculated results and avoid repeated computations.
+3. If `n` is even, recursively solve for `n / 2` and add one operation.
+4. If `n` is odd, explore both `n - 1` and `n + 1` and choose the minimum number of operations.
+5. Store the result in the map and return it.
+
+Using `long long` prevents integer overflow when calculating `n + 1`, especially when `n == INT_MAX`.
+
+## Code
+
+```cpp
+class Solution {
+public:
+    unordered_map<long long, int> dp;
+
+    int solve(long long n) {
+        if(n == 1) return 0;
+
+        if(dp.count(n)) return dp[n];
+
+        if(n % 2 == 0) {
+            return dp[n] = 1 + solve(n / 2);
+        }
+
+        return dp[n] = 1 + min(solve(n - 1), solve(n + 1));
+    }
+
+    int integerReplacement(int n) {
+        return solve(n);
+    }
+};
+```
+
+## Complexity Analysis
+
+- **Time Complexity:** O(log n) – The recursion explores a logarithmic number of distinct states, with memoization avoiding repeated calculations.
+- **Space Complexity:** O(log n) – The unordered map and recursion stack store logarithmically many states.
