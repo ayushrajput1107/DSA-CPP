@@ -1,0 +1,65 @@
+# Numbers With Same Consecutive Differences
+
+[**967. Numbers With Same Consecutive Differences**](https://leetcode.com/problems/numbers-with-same-consecutive-differences/)
+
+## Approach: Recursion + Backtracking
+
+1. Use recursion to generate all possible numbers of length `n`.
+2. Handle the leading digit separately because a number cannot start with `0`.
+3. For every subsequent digit, check whether the absolute difference between the previous digit and the current digit is equal to `k`.
+4. If the condition is satisfied, append the digit and make a recursive call.
+5. After returning from recursion, remove the last digit using `pop_back()` to explore other possibilities.
+6. When the length of the number becomes `n`, convert it into an integer and store it in the result.
+
+## Code
+
+```cpp
+class Solution {
+public:
+    vector<int> result;
+
+    void find_total_nums(string& num, int n, bool leading, int k) {
+        if(num.length() == n) {
+            result.push_back(stoi(num));
+            return;
+        }
+
+        int start = (leading) ? 1 : 0;
+
+        for(int i = start; i <= 9; i++) {
+            if(leading) {
+                num += (i + '0');
+                find_total_nums(num, n, false, k);
+                num.pop_back();
+            }
+            else {
+                int n1 = num.back() - '0';
+                int curr = i;
+
+                if(abs(n1 - curr) == k) {
+                    num += (i + '0');
+                    find_total_nums(num, n, false, k);
+                    num.pop_back();
+                }
+            }
+        }
+    }
+
+    vector<int> numsSameConsecDiff(int n, int k) {
+        result.clear();
+
+        string num = "";
+        bool leading = true;
+
+        find_total_nums(num, n, leading, k);
+
+        return result;
+    }
+};
+```
+
+## Complexity Analysis
+
+- **Time Complexity:** \(O(10 \times 2^{n-1} \times n)\) — At most 9 starting digits and 2 possible choices for each subsequent digit (when \(k > 0\)). Each completed number takes \(O(n)\) time to convert using `stoi()`.
+- **Space Complexity:** \(O(n)\) — Recursion depth and the temporary string require \(O(n)\) auxiliary space, excluding the output vector.
+
