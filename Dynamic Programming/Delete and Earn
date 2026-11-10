@@ -1,0 +1,71 @@
+# [740. Delete and Earn](https://leetcode.com/problems/delete-and-earn/)
+
+## Approach: Recursion + Memoization (Top-Down DP)
+
+We use a frequency map to calculate the total points earned by selecting each distinct number. Then, we apply Pick / Not Pick DP to maximize the total points.
+
+- First, store the frequency of each number using a map.
+- Create a sorted array `val` containing all distinct numbers.
+- Create another array `points`, where `points[i] = val[i] * frequency[val[i]]`.
+- At each index, we have two choices:
+
+  1. **Pick:** Add the current points and move to the next index. If the next number is consecutive, skip it because selecting the current number deletes all occurrences of `val[i] - 1` and `val[i] + 1`.
+  2. **Not Pick:** Skip the current number and move to the next index.
+
+- Use memoization to store the maximum points calculated for each index.
+
+The answer is the maximum of the Pick and Not Pick choices.
+
+## Code
+
+```cpp
+class Solution {
+public:
+    int solve(vector<int>& val, vector<int>& points, int i, vector<int>& dp) {
+        if(i >= val.size()) return 0;
+
+        if(dp[i] != -1) return dp[i];
+
+        int take = points[i];
+        int j = i + 1;
+
+        if(j < val.size() && val[j] == val[i] + 1)
+            take += solve(val, points, j + 1, dp);
+        else
+            take += solve(val, points, j, dp);
+
+        int notTake = solve(val, points, i + 1, dp);
+
+        return dp[i] = max(take, notTake);
+    }
+
+    int deleteAndEarn(vector<int>& nums) {
+        map<int,int> mp;
+
+        for(int num : nums)
+            mp[num]++;
+
+        vector<int> val, points;
+
+        for(auto &it : mp) {
+            val.push_back(it.first);
+            points.push_back(it.first * it.second);
+        }
+
+        vector<int> dp(val.size(), -1);
+
+        return solve(val, points, 0, dp);
+    }
+};
+```
+
+## Complexity Analysis
+
+Let `n` be the size of the input array and `k` be the number of distinct elements.
+
+- **Time Complexity:** \(O(n\log k + k)\)
+  - Building the map takes \(O(n\log k)\).
+  - Each DP state is calculated only once, taking \(O(k)\) overall.
+
+- **Space Complexity:** \(O(k)\)
+  - Frequency map, value and points arrays, DP array, and recursion stack.
