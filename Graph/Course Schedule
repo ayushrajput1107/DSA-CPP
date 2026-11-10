@@ -1,0 +1,68 @@
+207. Course Schedule
+
+Approach: BFS + Topological Sorting (Kahn's Algorithm)
+
+We use Kahn's Algorithm to determine whether all courses can be completed.
+
+Build an adjacency list where an edge b → a represents that course b must be completed before course a.
+
+Calculate the indegree of every vertex.
+
+Push all courses with indegree 0 into a queue because they have no prerequisites.
+
+Process the queue using BFS:
+
+Remove a course and add it to the topological ordering.
+
+Decrease the indegree of all its neighbouring courses.
+
+If any neighbour's indegree becomes 0, push it into the queue.
+
+Finally, check whether the number of processed courses equals numCourses.
+
+If all courses are processed, return true; otherwise, a cycle exists, so return false.
+
+Code
+
+class Solution {
+public:
+    bool canFinish(int numCourses, vector<vector<int>>& prerequisites) {
+        vector<vector<int>> edge(numCourses);
+        vector<int> indegree(numCourses, 0);
+
+        for(const auto& it : prerequisites) {
+            edge[it[1]].push_back(it[0]);
+            indegree[it[0]]++;
+        }
+
+        queue<int> q;
+
+        for(int i = 0; i < numCourses; i++)
+            if(indegree[i] == 0)
+                q.push(i);
+
+        vector<int> topo;
+
+        while(!q.empty()) {
+            int num = q.front();
+            q.pop();
+
+            topo.push_back(num);
+
+            for(int neighbour : edge[num]) {
+                indegree[neighbour]--;
+
+                if(indegree[neighbour] == 0)
+                    q.push(neighbour);
+            }
+        }
+
+        return topo.size() == numCourses;
+    }
+};
+
+Complexity Analysis
+
+Time Complexity: (O(V+E)) — Every vertex and edge is processed once.
+
+Space Complexity: (O(V+E)) — Adjacency list, indegree array, queue and topological ordering.
