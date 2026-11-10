@@ -1,0 +1,65 @@
+210. Course Schedule II
+
+Approach: BFS + Topological Sorting (Kahn's Algorithm)
+
+We use the same Kahn's Algorithm to find a valid ordering in which all courses can be completed.
+
+Build an adjacency list and calculate the indegree of every course.
+
+Push all courses having indegree 0 into a queue.
+
+Process the queue using BFS and store the processed courses in a topo vector.
+
+Reduce the indegree of neighbouring courses and push them into the queue when their indegree becomes 0.
+
+After BFS, check whether all courses are included in the topological ordering.
+
+If a cycle exists, return an empty vector. Otherwise, return the topological ordering.
+
+Code
+
+class Solution {
+public:
+    vector<int> findOrder(int numCourses, vector<vector<int>>& prerequisites) {
+        vector<vector<int>> edge(numCourses);
+        vector<int> indegree(numCourses, 0);
+
+        for(const auto& it : prerequisites) {
+            edge[it[1]].push_back(it[0]);
+            indegree[it[0]]++;
+        }
+
+        queue<int> q;
+
+        for(int i = 0; i < indegree.size(); i++) {
+            if(indegree[i] == 0)
+                q.push(i);
+        }
+
+        vector<int> topo;
+
+        while(!q.empty()) {
+            int num = q.front();
+            topo.push_back(num);
+            q.pop();
+
+            for(int neigh : edge[num]) {
+                indegree[neigh]--;
+
+                if(indegree[neigh] == 0)
+                    q.push(neigh);
+            }
+        }
+
+        if(topo.size() != numCourses)
+            return {};
+
+        return topo;
+    }
+};
+
+Complexity Analysis
+
+Time Complexity: (O(V+E)) — Every vertex and edge is processed once.
+
+Space Complexity: (O(V+E)) — Adjacency list, indegree array, queue and topological ordering.
