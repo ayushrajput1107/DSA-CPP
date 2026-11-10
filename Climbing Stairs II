@@ -1,0 +1,55 @@
+# [3693. Climbing Stairs II](https://leetcode.com/problems/climbing-stairs-ii/)
+
+## Approach: Recursion + Memoization (Top-Down DP)
+
+We use recursion to find the minimum cost required to reach step `n`.
+
+- Start from step `0` with an initial cost of `0`.
+- From each step, we can jump either `1`, `2`, or `3` steps.
+- The cost of jumping `i` steps is `costs[next - 1] + i * i`, where `next = index + i`.
+- Try all three possible jumps and select the minimum total cost.
+- Use a DP array to store previously calculated results and avoid recomputing overlapping subproblems.
+
+**Base Case:**
+- If `index == n`, we have reached the destination, so return `0`.
+
+## Code
+
+```cpp
+class Solution {
+public:
+    int dp[100001];
+
+    int min_cost(int n, vector<int>& costs, int index) {
+        if(index == n) return 0;
+
+        if(dp[index] != -1) return dp[index];
+
+        int ans = INT_MAX;
+
+        for(int i = 1; i <= 3; i++) {
+            int next = index + i;
+
+            if(next <= n) {
+                int res = costs[next - 1] + i * i;
+                int func = min_cost(n, costs, next);
+
+                if(func != INT_MAX)
+                    ans = min(ans, res + func);
+            }
+        }
+
+        return dp[index] = ans;
+    }
+
+    int climbStairs(int n, vector<int>& costs) {
+        memset(dp, -1, sizeof(dp));
+        return min_cost(n, costs, 0);
+    }
+};
+```
+
+## Complexity Analysis
+
+- **Time Complexity:** \(O(n)\) — Each index is calculated only once, and at most 3 transitions are explored per index.
+- **Space Complexity:** \(O(n)\) — DP array and recursion stack.
