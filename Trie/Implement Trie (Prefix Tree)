@@ -1,0 +1,112 @@
+# 208. Implement Trie (Prefix Tree)
+
+**Problem Link:** [LeetCode – Implement Trie (Prefix Tree)](https://leetcode.com/problems/implement-trie-prefix-tree/)
+
+## Approach: Trie (Prefix Tree)
+
+A Trie is a tree-based data structure used to efficiently store and search strings, especially when dealing with prefixes.
+
+Each node contains:
+- `isEndOfWord`: A boolean indicating whether a complete word ends at that node.
+- `children[26]`: An array of pointers representing the 26 lowercase English letters.
+
+### Operations
+
+1. **Insert:** Traverse each character of the word. If the corresponding child node does not exist, create a new node. Finally, mark the last node as the end of the word.
+
+2. **Search:** Traverse the Trie character by character. If any character is missing, return `false`. Otherwise, check whether the last node marks the end of a complete word.
+
+3. **StartsWith:** Traverse the Trie for every character in the given prefix. If all characters exist, return `true`.
+
+## Code
+
+```cpp
+class Trie {
+public:
+    struct trieNode {
+        bool isEndOfWord;
+        trieNode* children[26];
+    };
+
+    trieNode* getNode() {
+        trieNode* newNode = new trieNode();
+        newNode->isEndOfWord = false;
+
+        for(int i = 0; i < 26; i++) {
+            newNode->children[i] = NULL;
+        }
+
+        return newNode;
+    }
+
+    trieNode* root;
+
+    Trie() {
+        root = getNode();
+    }
+
+    void insert(string word) {
+        trieNode* node = root;
+
+        for(int i = 0; i < word.length(); i++) {
+            int idx = word[i] - 'a';
+
+            if(node->children[idx] == NULL) {
+                node->children[idx] = getNode();
+            }
+
+            node = node->children[idx];
+        }
+
+        node->isEndOfWord = true;
+    }
+
+    bool search(string word) {
+        trieNode* node = root;
+
+        for(int i = 0; i < word.length(); i++) {
+            int idx = word[i] - 'a';
+
+            if(node->children[idx] == NULL) {
+                return false;
+            }
+
+            node = node->children[idx];
+        }
+
+        return node->isEndOfWord;
+    }
+
+    bool startsWith(string prefix) {
+        trieNode* node = root;
+
+        for(int i = 0; i < prefix.length(); i++) {
+            int idx = prefix[i] - 'a';
+
+            if(node->children[idx] == NULL) {
+                return false;
+            }
+
+            node = node->children[idx];
+        }
+
+        return true;
+    }
+};
+```
+
+## Complexity Analysis
+
+Let `L` be the length of the input word or prefix.
+
+| Operation | Time Complexity |
+|---|---|
+| Insert | O(L) |
+| Search | O(L) |
+| StartsWith | O(L) |
+
+**Space Complexity:** O(N × 26) in the worst case, where N is the total number of nodes in the Trie. Each node stores 26 child pointers.
+
+## Key Takeaway
+
+Trie provides efficient insertion, exact word searching, and prefix searching by sharing common prefixes among strings. It is particularly useful in autocomplete systems, dictionaries, and word-search applications.
