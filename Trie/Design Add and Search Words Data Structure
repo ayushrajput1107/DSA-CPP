@@ -1,0 +1,116 @@
+# 211. Design Add and Search Words Data Structure
+
+**Problem Link:** [LeetCode – Design Add and Search Words Data Structure](https://leetcode.com/problems/design-add-and-search-words-data-structure/)
+
+## Approach: Trie + Recursion + Backtracking
+
+A Trie is a tree-based data structure used to store and search words efficiently.
+
+Each Trie node contains:
+- `isEndOfWord`: Indicates whether a complete word ends at the current node.
+- `children[26]`: Stores pointers to the 26 lowercase English alphabet characters.
+
+### Operations
+
+1. **AddWord:** Traverse each character of the word. If the corresponding child node does not exist, create a new node. Mark the last node as the end of the word.
+
+2. **Search:** Use a recursive function to traverse the Trie character by character.
+   - If the character is a normal alphabet, move to its corresponding child node.
+   - If the character is `.`, explore all available child nodes recursively.
+   - When the entire word is traversed, check whether the current node marks the end of a complete word.
+
+3. **Backtracking:** Whenever `.` is encountered, explore all possible character paths. If any path successfully matches the complete word, return `true`; otherwise, return `false`.
+
+## Code
+
+```cpp
+class WordDictionary {
+public:
+    struct trieNode {
+        bool isEndOfWord;
+        trieNode* children[26];
+    };
+
+    trieNode* getNode() {
+        trieNode* newNode = new trieNode();
+        newNode->isEndOfWord = false;
+
+        for(int i = 0; i < 26; i++)
+            newNode->children[i] = NULL;
+
+        return newNode;
+    }
+
+    trieNode* root;
+
+    bool check(string& word, int index, trieNode* node) {
+        if(index == word.length())
+            return node->isEndOfWord;
+
+        char ch = word[index];
+
+        if(ch == '.') {
+            for(int i = 0; i < 26; i++) {
+                if(node->children[i] != NULL) {
+                    if(check(word, index + 1, node->children[i]))
+                        return true;
+                }
+            }
+            return false;
+        }
+
+        int idx = ch - 'a';
+
+        if(node->children[idx] == NULL)
+            return false;
+
+        return check(word, index + 1, node->children[idx]);
+    }
+
+    WordDictionary() {
+        root = getNode();
+    }
+
+    void addWord(string word) {
+        trieNode* node = root;
+
+        for(int i = 0; i < word.length(); i++) {
+            int idx = word[i] - 'a';
+
+            if(node->children[idx] == NULL) {
+                node->children[idx] = getNode();
+            }
+
+            node = node->children[idx];
+        }
+
+        node->isEndOfWord = true;
+    }
+
+    bool search(string word) {
+        trieNode* node = root;
+        return check(word, 0, node);
+    }
+};
+```
+
+## Complexity Analysis
+
+Let:
+- \(L\) = Length of the word being searched.
+- \(N\) = Total number of nodes in the Trie.
+
+| Operation | Time Complexity |
+|---|---|
+| AddWord | \(O(L)\) |
+| Search | \(O(26^L)\) worst case |
+
+**Space Complexity:** \(O(26N)\) for storing the Trie.
+
+The recursive search requires an additional \(O(L)\) stack space in the worst case.
+
+## Key Takeaway
+
+Trie efficiently handles word insertion and searching. The `.` wildcard introduces multiple possible paths, which are explored using recursion and backtracking.
+
+This approach is particularly useful for implementing dictionaries with wildcard character matching.
