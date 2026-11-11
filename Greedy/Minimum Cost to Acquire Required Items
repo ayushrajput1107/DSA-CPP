@@ -1,0 +1,37 @@
+Minimum Cost to Acquire Required Items
+Problem Link: LeetCode – Minimum Cost to Acquire Required Items
+Approach: Greedy / Case Analysis
+We have three possible ways to acquire the required items:
+1. Buy items separately: Purchase need1 items of type 1 and need2 items of type 2 individually.
+2. Buy only combined items: Purchase max(need1, need2) combined items. This satisfies both requirements.
+3. Buy combined + individual items: Purchase min(need1, need2) combined items to satisfy the smaller requirement, then purchase the remaining items individually.
+Calculate the cost of all three possibilities and return the minimum.
+Code
+class Solution {
+public:
+    long long minimumCost(int cost1, int cost2, int costBoth, int need1, int need2) {
+        long long res1 = (need1 * 1LL * cost1) + (need2 * 1LL * cost2);
+
+        long long res2 = max(need1, need2) * 1LL * costBoth;
+
+        long long temp = min(need1, need2) * 1LL * costBoth;
+
+        if(need1 > need2) {
+            temp += (need1 - need2) * 1LL * cost1;
+        }
+        else {
+            temp += (need2 - need1) * 1LL * cost2;
+        }
+
+        return min({res1, res2, temp});
+    }
+};
+
+
+Complexity Analysis
+- Time Complexity: \(O(1)\) – Only a constant number of arithmetic operations and comparisons.
+- Space Complexity: \(O(1)\) – No extra space is used.
+Key Takeaway
+Instead of exploring every possible combination, we calculate the cost of three optimal purchasing strategies and select the minimum.
+
+This is a constant-time solution using simple greedy case analysis.
