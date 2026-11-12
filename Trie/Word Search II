@@ -1,0 +1,131 @@
+# Word Search II
+
+**LeetCode Problem:** [212. Word Search II](https://leetcode.com/problems/word-search-ii/)
+
+## Approach: Trie + DFS + Backtracking
+
+- First, construct a Trie using all the given words. Each Trie node stores its children, the complete word, and whether it represents the end of a word.
+- Traverse every cell of the board and check whether its character exists in the Trie.
+- Use DFS to explore all four adjacent directions (up, right, down, left).
+- Mark the current cell as visited using `'#'` to avoid visiting the same cell again in the current path.
+- Whenever a Trie node represents the end of a word, add that word to the answer and reset its `isEndOfWord` flag to avoid duplicates.
+- Restore the original character during backtracking.
+
+## Code
+
+```cpp
+class Solution {
+public:
+    struct trieNode {
+        string word;
+        bool isEndOfWord;
+        trieNode* children[26];
+    };
+
+    trieNode* getNode() {
+        trieNode* newNode = new trieNode();
+        newNode->word = "";
+        newNode->isEndOfWord = false;
+
+        for(int i = 0; i < 26; i++)
+            newNode->children[i] = NULL;
+
+        return newNode;
+    }
+
+    void find_string(trieNode* node, vector<vector<char>>& board,
+                     int row, int col, vector<string>& ans,
+                     vector<pair<int,int>>& directions) {
+
+        if(node->isEndOfWord == true) {
+            ans.push_back(node->word);
+            node->isEndOfWord = false;
+        }
+
+        char ch = board[row][col];
+        board[row][col] = '#';
+
+        for(const auto& it : directions) {
+            int r = row + it.first, c = col + it.second;
+
+            if(r < 0 || c < 0 || r >= board.size() ||
+               c >= board[0].size() || board[r][c] == '#')
+                continue;
+
+            char ch = board[r][c];
+            int idx = ch - 'a';
+
+            if(node->children[idx] == NULL)
+                continue;
+
+            find_string(node->children[idx], board, r, c,
+                        ans, directions);
+        }
+
+        board[row][col] = ch;
+    }
+
+    vector<string> findWords(vector<vector<char>>& board,
+                             vector<string>& words) {
+
+        trieNode* root = getNode();
+        int n = words.size();
+
+        for(int i = 0; i < n; i++) {
+            trieNode* node = root;
+
+            for(char ch : words[i]) {
+                int idx = ch - 'a';
+
+                if(node->children[idx] == NULL)
+                    node->children[idx] = getNode();
+
+                node = node->children[idx];
+            }
+
+            node->word = words[i];
+            node->isEndOfWord = true;
+        }
+
+        vector<string> ans;
+        vector<pair<int,int>> directions = {
+            {-1,0}, {0,1}, {1,0}, {0,-1}
+        };
+
+        for(int i = 0; i < board.size(); i++) {
+            for(int j = 0; j < board[i].size(); j++) {
+                char ch = board[i][j];
+                int idx = ch - 'a';
+
+                if(root->children[idx] == NULL)
+                    continue;
+
+                find_string(root->children[idx], board, i, j,
+                            ans, directions);
+            }
+        }
+
+        return ans;
+    }
+};
+```
+
+## Complexity Analysis
+
+Let:
+- \(M\) = Number of rows in the board.
+- \(N\) = Number of columns in the board.
+- \(W\) = Number of words.
+- \(L\) = Maximum length of a word.
+
+**Time Complexity:**
+- Trie Construction: \(O(W \cdot L)\)
+- DFS and Backtracking: \(O(MN \cdot 3^L)\) in the worst case.
+
+The DFS explores at most three new directions after the first move because the previous cell cannot be revisited.
+
+**Space Complexity:**
+- Trie: \(O(W \cdot L)\)
+- DFS Recursion Stack: \(O(L)\)
+
+Overall Auxiliary Space: \(O(W \cdot L + L)\), excluding the output and input board.
