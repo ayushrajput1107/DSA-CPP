@@ -1,0 +1,103 @@
+# Concatenated Words
+
+**LeetCode Problem:** [472. Concatenated Words](https://leetcode.com/problems/concatenated-words/)
+
+## Approach: Trie + DFS + Memoization
+
+- First, insert all the given words into a Trie, where each node maintains its children and whether it represents the end of a word.
+- For every word, use DFS to check whether it can be segmented into smaller dictionary words.
+- Start traversing the Trie from the current position in the word.
+- Whenever a complete word is found, recursively check the remaining suffix by restarting Trie traversal from the root.
+- Maintain a count of the number of words used to form the current word. A word is considered concatenated only if it consists of at least two smaller words.
+- Use memoization to avoid recalculating previously explored positions and reduce redundant recursive calls.
+
+## Code
+
+```cpp
+class Solution {
+public:
+    struct trieNode {
+        bool isEndOfWord;
+        trieNode* children[26];
+    };
+
+    trieNode* getNode() {
+        trieNode* newNode = new trieNode();
+        newNode->isEndOfWord = false;
+
+        for(int i = 0; i < 26; i++)
+            newNode->children[i] = NULL;
+
+        return newNode;
+    }
+
+    bool solve(trieNode* root, string& word, int start,
+               int count, vector<vector<int>>& dp) {
+
+        if(start == word.length())
+            return count >= 2;
+
+        if(dp[start][min(count, 2)] != -1)
+            return dp[start][min(count, 2)];
+
+        trieNode* node = root;
+
+        for(int i = start; i < word.length(); i++) {
+            int idx = word[i] - 'a';
+
+            if(node->children[idx] == NULL)
+                break;
+
+            node = node->children[idx];
+
+            if(node->isEndOfWord) {
+                if(solve(root, word, i + 1, count + 1, dp))
+                    return dp[start][min(count, 2)] = 1;
+            }
+        }
+
+        return dp[start][min(count, 2)] = 0;
+    }
+
+    vector<string> findAllConcatenatedWordsInADict(
+        vector<string>& words) {
+
+        trieNode* root = getNode();
+
+        for(const string& s : words) {
+            trieNode* node = root;
+
+            for(char ch : s) {
+                int idx = ch - 'a';
+
+                if(node->children[idx] == NULL)
+                    node->children[idx] = getNode();
+
+                node = node->children[idx];
+            }
+
+            node->isEndOfWord = true;
+        }
+
+        vector<string> ans;
+
+        for(string& s : words) {
+            vector<vector<int>> dp(s.length(), vector<int>(3, -1));
+
+            if(solve(root, s, 0, 0, dp))
+                ans.push_back(s);
+        }
+
+        return ans;
+    }
+};
+```
+
+## Complexity Analysis
+
+Let:
+- \(W\) = Number of words.
+- \(L\) = Maximum length of a word.
+
+- **Time Complexity:** \(O(W \cdot L^2)\) — Trie construction takes \(O(W \cdot L)\), and checking each word using DFS and memoization takes \(O(L^2)\).
+- **Space Complexity:** \(O(W \cdot L)\) — For storing the Trie and the auxiliary DP and recursion space.
