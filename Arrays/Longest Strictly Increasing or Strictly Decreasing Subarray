@@ -1,0 +1,47 @@
+# Longest Strictly Increasing or Strictly Decreasing Subarray
+
+**LeetCode Problem:** [3105. Longest Strictly Increasing or Strictly Decreasing Subarray](https://leetcode.com/problems/longest-strictly-increasing-or-strictly-decreasing-subarray/)
+
+## Approach: Two-Pass Traversal
+
+- Traverse the array to find the longest strictly increasing contiguous subarray.
+- Maintain a counter `start`, incrementing it when the current element is greater than the previous element. Otherwise, reset it to `1`.
+- Repeat the same process to find the longest strictly decreasing contiguous subarray.
+- Return the maximum of both lengths.
+
+## Code
+
+```cpp
+class Solution {
+public:
+    int longestMonotonicSubarray(vector<int>& nums) {
+        int maxi_1 = 0, maxi_2 = 0;
+        int start = 1;
+
+        for(int i = 0; i < nums.size(); i++) {
+            if(i > 0) {
+                if(nums[i] > nums[i-1]) start++;
+                else start = 1;
+            }
+            maxi_1 = max(maxi_1, start);
+        }
+
+        start = 1;
+
+        for(int i = 0; i < nums.size(); i++) {
+            if(i > 0) {
+                if(nums[i] < nums[i-1]) start++;
+                else start = 1;
+            }
+            maxi_2 = max(maxi_2, start);
+        }
+
+        return max(maxi_1, maxi_2);
+    }
+};
+```
+
+## Complexity Analysis
+
+- **Time Complexity:** \(O(N)\) — Two traversals of the array.
+- **Space Complexity:** \(O(1)\) — Only a constant number of variables are used.
