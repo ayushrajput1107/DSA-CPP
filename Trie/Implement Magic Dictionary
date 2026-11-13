@@ -1,0 +1,100 @@
+# Implement Magic Dictionary
+
+**LeetCode Problem:** [Implement Magic Dictionary](https://leetcode.com/problems/implement-magic-dictionary/)
+
+## Approach: Trie + Character Replacement
+
+1. Implement a Trie data structure where each node contains an array of 26 child pointers and a boolean `isEndOfWord` to mark the end of a word.
+2. In `buildDict()`, insert all dictionary words into the Trie.
+3. In `search()`, iterate through each character of the given word.
+4. Replace the current character with every other lowercase English letter except the original character.
+5. For each modified word, use `solve()` to check whether it exists in the Trie.
+6. If any modified word exists in the dictionary, return `true`; otherwise, return `false`.
+
+## Complexity Analysis
+
+Let:
+- \(N\) = Number of words in the dictionary.
+- \(L\) = Maximum length of a dictionary word.
+- \(M\) = Length of the search word.
+
+- **Time Complexity:**
+  - `buildDict()`: \(O(N \times L)\)
+  - `search()`: \(O(26 \times M^2)\), since each character replacement creates a modified string and checks it in the Trie.
+
+- **Space Complexity:** \(O(N \times L)\) for storing the Trie.
+
+## Code
+
+```cpp
+class MagicDictionary {
+public:
+    struct trieNode {
+        bool isEndOfWord;
+        trieNode* children[26];
+    };
+
+    trieNode* getNode() {
+        trieNode* newNode = new trieNode();
+        newNode->isEndOfWord = false;
+        for(int i = 0; i < 26; i++)
+            newNode->children[i] = NULL;
+        return newNode;
+    }
+
+    trieNode* root;
+
+    bool solve(string& searchWord) {
+        trieNode* node = root;
+
+        for(const char& ch : searchWord) {
+            int idx = ch - 'a';
+            if(node->children[idx] == NULL)
+                return false;
+            node = node->children[idx];
+        }
+
+        return node->isEndOfWord == true;
+    }
+
+    MagicDictionary() {
+        root = getNode();
+    }
+
+    void buildDict(vector<string> dictionary) {
+        for(const string& s : dictionary) {
+            trieNode* node = root;
+
+            for(const char& ch : s) {
+                int idx = ch - 'a';
+                if(node->children[idx] == NULL)
+                    node->children[idx] = getNode();
+                node = node->children[idx];
+            }
+
+            node->isEndOfWord = true;
+        }
+    }
+
+    bool search(string searchWord) {
+        for(int i = 0; i < searchWord.length(); i++) {
+            char pivot = searchWord[i];
+
+            for(char ch = 'a'; ch <= 'z'; ch++) {
+                if(pivot == ch) continue;
+
+                string temp = searchWord;
+                temp[i] = ch;
+
+                if(solve(temp)) return true;
+            }
+        }
+
+        return false;
+    }
+};
+```
+
+## Key Concept
+
+The Trie efficiently stores dictionary words and allows checking whether a word exists after modifying exactly one character. The search considers all possible single-character replacements.
