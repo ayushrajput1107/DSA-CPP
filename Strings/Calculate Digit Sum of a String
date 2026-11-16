@@ -1,0 +1,46 @@
+## [Calculate Digit Sum of a String](https://leetcode.com/problems/calculate-digit-sum-of-a-string/)
+
+### Approach: String Simulation
+
+- Traverse the string in groups of size `k`.
+- Calculate the sum of digits in each group.
+- Append the calculated sum to a new string.
+- Replace the original string with the newly generated string.
+- Repeat until the string length becomes less than or equal to `k`.
+
+### Code
+
+```cpp
+class Solution {
+public:
+    string digitSum(string s, int k) {
+        while(s.length() > k) {
+            string res = "";
+            int index = 0;
+
+            while(index < s.length()) {
+                int end = min(index + k, (int)s.length());
+                string temp = s.substr(index, end - index);
+
+                index = end;
+                int sum = 0;
+
+                for(char ch : temp) {
+                    sum += (ch - '0');
+                }
+
+                res += to_string(sum);
+            }
+
+            s = res;
+        }
+
+        return s;
+    }
+};
+```
+
+### Complexity Analysis
+
+- **Time Complexity:** \(O(n \log_k n)\) approximately, for \(k > 1\).
+- **Space Complexity:** \(O(n)\) for the temporary strings.
