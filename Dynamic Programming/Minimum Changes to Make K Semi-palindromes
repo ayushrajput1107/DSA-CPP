@@ -1,0 +1,111 @@
+# Minimum Changes to Make K Semi-palindromes
+
+**LeetCode Problem:** [2911. Minimum Changes to Make K Semi-palindromes](https://leetcode.com/problems/minimum-changes-to-make-k-semi-palindromes/)
+
+## Approach: Recursion + Memoization (DP)
+
+### 1. Cost Calculation (`getCost`)
+
+- Calculate the length of the current substring.
+- Iterate through all divisors `d` of the substring length, excluding the length itself.
+- Divide the substring into `d` groups, where each group contains characters at a fixed distance of `d`.
+- For each group, compare characters from both ends, just like checking a palindrome.
+- Count the mismatched pairs. The minimum mismatch count across all valid divisors is the cost of making the substring semi-palindromic.
+- Store the result in `dpCost[start][end]` to avoid recalculation.
+
+### 2. DP Function (`solve`)
+
+- `solve(start, k)` represents the minimum changes required to divide the remaining string starting at `start` into exactly `k` semi-palindromic substrings.
+- If `k == 0`, return `0` if the entire string has been processed; otherwise, return `INT_MAX`.
+- If the remaining string cannot provide at least 2 characters per substring, return `INT_MAX`.
+- Try every possible ending position for the current substring.
+- Calculate its cost using `getCost()` and recursively solve for the remaining `k - 1` substrings.
+- Take the minimum total cost and store it in `dp[start][k]`.
+
+## C++ Code
+
+```cpp
+class Solution {
+public:
+    int dp[201][101];
+    int dpCost[201][201];
+
+    int getCost(string& s, int start, int end) {
+        int len = end - start + 1;
+
+        if(dpCost[start][end] != -1)
+            return dpCost[start][end];
+
+        int COST = INT_MAX;
+
+        for(int d = 1; d < len; d++) {
+            if(len % d != 0) continue;
+
+            int count = 0;
+
+            for(int group = 0; group < d; group++) {
+                int left = start + group;
+                int right = left + (((len / d) - 1) * d);
+
+                while(left < right) {
+                    if(s[left] != s[right])
+                        count++;
+
+                    left += d;
+                    right -= d;
+                }
+            }
+
+            COST = min(COST, count);
+        }
+
+        return dpCost[start][end] = COST;
+    }
+
+    int solve(string& s, int start, int k) {
+        if(k == 0) {
+            if(start >= s.length()) return 0;
+            return INT_MAX;
+        }
+
+        if(start + (2 * k) > s.length())
+            return INT_MAX;
+
+        if(dp[start][k] != -1)
+            return dp[start][k];
+
+        int minCost = INT_MAX;
+
+        for(int end = start + 1; end < s.length(); end++) {
+            int rem = solve(s, end + 1, k - 1);
+
+            if(rem != INT_MAX) {
+                minCost = min(minCost,
+                    getCost(s, start, end) + rem);
+            }
+        }
+
+        return dp[start][k] = minCost;
+    }
+
+    int minimumChanges(string s, int k) {
+        memset(dp, -1, sizeof(dp));
+        memset(dpCost, -1, sizeof(dpCost));
+
+        return solve(s, 0, k);
+    }
+};
+```
+
+## Complexity Analysis
+
+Let `n` be the length of the string.
+
+- **Time Complexity:** O(n³ log n + n² × k)
+  - There are O(n²) possible substrings.
+  - Each substring's cost is calculated once, taking O(n log n) in the upper bound.
+  - DP has O(n × k) states with O(n) transitions per state.
+
+- **Space Complexity:** O(n² + n × k)
+  - `dpCost` stores substring costs.
+  - `dp` stores memoized recursive states.
