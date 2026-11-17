@@ -1,0 +1,62 @@
+# Multiply Strings
+
+**LeetCode Problem:** [Multiply Strings](https://leetcode.com/problems/multiply-strings/)
+
+## Approach: Array Simulation (Grade School Multiplication)
+
+1. First, handle the edge case where either number is `"0"`. Return `"0"` directly.
+2. Create a result array of size `n1 + n2` initialized with zeros because the maximum length of the product can be `n1 + n2`.
+3. Traverse both strings from right to left and multiply each pair of digits.
+4. Add the multiplication result to the corresponding position in the result array.
+5. Store the current digit using `sum % 10` and carry using `sum / 10`.
+6. Skip leading zeros from the result array and convert the remaining digits into a string.
+
+## Code
+
+```cpp
+class Solution {
+public:
+    string multiply(string num1, string num2) {
+        int n1 = num1.length(), n2 = num2.length();
+
+        if(num1 == "0" || num2 == "0") return "0";
+
+        vector<int> digit(n1 + n2, 0);
+
+        for(int i = n1 - 1; i >= 0; i--) {
+            for(int j = n2 - 1; j >= 0; j--) {
+                int mul = (num1[i] - '0') * (num2[j] - '0');
+                int sum = mul + digit[i + j + 1];
+
+                digit[i + j + 1] = sum % 10;
+                digit[i + j] += sum / 10;
+            }
+        }
+
+        int index = 0;
+        string ans = "";
+
+        while(index < digit.size() && digit[index] == 0)
+            index++;
+
+        while(index < digit.size()) {
+            ans += (digit[index] + '0');
+            index++;
+        }
+
+        return ans;
+    }
+};
+```
+
+## Complexity Analysis
+
+- **Time Complexity:** \(O(n1 \times n2)\) — We multiply every digit of `num1` with every digit of `num2`.
+- **Space Complexity:** \(O(n1 + n2)\) — We use an extra array to store the resulting digits.
+
+## Key Concepts
+
+- String Manipulation
+- Array Simulation
+- Basic Mathematics
+- Carry Handling
