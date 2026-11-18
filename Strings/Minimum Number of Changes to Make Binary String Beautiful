@@ -1,0 +1,33 @@
+# [Minimum Number of Changes to Make Binary String Beautiful](https://leetcode.com/problems/minimum-number-of-changes-to-make-binary-string-beautiful/)
+
+## Approach: Greedy
+
+- A binary string is beautiful if every pair of adjacent characters at even and odd indices is equal.
+- Since the string length is even, divide it into pairs: `(0,1), (2,3), (4,5), ...`.
+- For each pair, check whether both characters are equal.
+- If the characters are different, we need exactly one change to make them equal.
+- Count the number of such pairs and return the count.
+
+## Code
+
+```cpp
+class Solution {
+public:
+    int minChanges(string s) {
+        int minChange = 0;
+
+        for(int i = 0; i < s.length(); i += 2) {
+            if(s[i] != s[i + 1]) {
+                minChange++;
+            }
+        }
+
+        return minChange;
+    }
+};
+```
+
+## Complexity Analysis
+
+- **Time Complexity:** `O(n)` — We traverse the string once, checking every pair.
+- **Space Complexity:** `O(1)` — We use only a constant amount of extra space.
