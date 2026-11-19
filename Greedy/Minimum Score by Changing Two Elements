@@ -1,0 +1,35 @@
+# [Minimum Score by Changing Two Elements](https://leetcode.com/problems/minimum-score-by-changing-two-elements/)
+
+### Approach: Sorting
+
+- Sort the array in ascending order.
+- We can change at most two elements, so we have three possible cases:
+  1. Change the two smallest elements.
+  2. Change the two largest elements.
+  3. Change the smallest and largest elements.
+- Calculate the difference between the maximum and minimum remaining elements for all three cases.
+- Return the minimum of these three differences.
+
+### Code
+
+```cpp
+class Solution {
+public:
+    int minimizeSum(vector<int>& nums) {
+        sort(nums.begin(), nums.end());
+
+        int n = nums.size();
+
+        int ans1 = abs(nums[2] - nums[n-1]);
+        int ans2 = abs(nums[n-3] - nums[0]);
+        int ans3 = abs(nums[1] - nums[n-2]);
+
+        return min({ans1, ans2, ans3});
+    }
+};
+```
+
+### Complexity Analysis
+
+- **Time Complexity:** O(n log n) – Sorting the array.
+- **Space Complexity:** O(1) – Constant auxiliary space (excluding sorting overhead).
