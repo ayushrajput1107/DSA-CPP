@@ -1,0 +1,80 @@
+# [Maximize Consecutive Elements in an Array After Modification](https://leetcode.com/problems/maximize-consecutive-elements-in-an-array-after-modification/)
+
+### Approach: Sorting + Recursion + Memoization (DP)
+
+1. Sort the array to process elements in increasing order.
+2. Use recursion with three states:
+   - `curr`: Current index.
+   - `prev`: Previously selected element's index.
+   - `inc`: Whether the previous element was incremented by 1.
+3. For every element, consider two choices:
+   - Take it without incrementing.
+   - Take it after incrementing by 1.
+4. Use memoization with `dp[prev + 1][inc]` to avoid repeated calculations.
+5. Also consider skipping the current element and maximize the resulting sequence length.
+
+### C++ Code
+
+### C++ Code
+
+```cpp
+class Solution {
+public:
+    int dp[100001][2];
+
+    int solve(vector<int>& nums, int curr, int prev, bool inc) {
+        if(curr >= nums.size()) return 0;
+
+        if(prev != -1 && ((!inc && nums[curr] > nums[prev] + 1) ||
+                          (inc && nums[prev] + 2 < nums[curr])))
+            return 0;
+
+        if(dp[prev + 1][inc] != -1)
+            return dp[prev + 1][inc];
+
+        int take = 0, not_take = 0;
+
+        if(prev == -1) {
+            take = max(1 + solve(nums, curr + 1, curr, false),
+                       1 + solve(nums, curr + 1, curr, true));
+        }
+        else if(inc) {
+            if(nums[prev] + 2 == nums[curr])
+                take = 1 + solve(nums, curr + 1, curr, false);
+
+            if(nums[prev] + 2 == nums[curr] + 1)
+                take = 1 + solve(nums, curr + 1, curr, true);
+        }
+        else {
+            if(nums[prev] + 1 == nums[curr])
+                take = 1 + solve(nums, curr + 1, curr, false);
+
+            if(nums[prev] + 1 == nums[curr] + 1)
+                take = 1 + solve(nums, curr + 1, curr, true);
+        }
+
+        not_take = solve(nums, curr + 1, prev, inc);
+
+        return dp[prev + 1][inc] = max(take, not_take);
+    }
+
+    int maxSelectedElements(vector<int>& nums) {
+        memset(dp, -1, sizeof(dp));
+        sort(begin(nums), end(nums));
+        return solve(nums, 0, -1, false);
+    }
+};
+```
+
+### Complexity Analysis
+
+- Sorting: \(O(n\log n)\)
+- DP storage: \(O(n)\)
+- Auxiliary recursion stack: \(O(n)\)
+
+### Key Learnings
+
+- Sorting helps simplify transitions between consecutive elements.
+- Take/Not Take recursion can represent multiple possibilities.
+- Tracking whether the previous element was incremented helps determine valid transitions.
+- Memoization avoids recomputing previously evaluated states.
