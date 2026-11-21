@@ -1,0 +1,53 @@
+# [Assign Umbrella on Rainy Days](https://leetcode.com/problems/assign-umbrella-on-rainy-days/)
+
+## Approach: Greedy
+
+1. Traverse the rain array and check whether it is a rainy day (`rain[i] == 1`).
+2. If it is not raining, assign `"None"`.
+3. If it is raining on consecutive days, assign the umbrella to the person who has used it fewer times so far.
+4. If both have used it equally, assign it to Alice.
+5. If it is raining but the next day is not rainy (or it is the last day), assign the umbrella to Bob.
+6. Maintain separate counters for Alice and Bob to track their umbrella usage.
+
+## Code
+
+```cpp
+class Solution {
+public:
+    vector<string> assignUmbrella(vector<int>& rain) {
+        vector<string>ans;
+        int n = rain.size();
+        int alice = 0,bob = 0;
+
+        for(int i=0;i<n;i++){
+            if(rain[i] == 1){
+                if(i != n-1 && rain[i] == 1 && rain[i+1] == 1){
+                    if(alice == bob){
+                        ans.push_back("Alice");
+                        alice++;
+                    }
+                    else if(alice > bob){
+                        ans.push_back("Bob");
+                        bob++;
+                    }
+                    else{
+                        ans.push_back("Alice");
+                        alice++;
+                    }
+                }
+                else{
+                    ans.push_back("Bob");
+                    bob++;
+                }
+            }
+            else ans.push_back("None");
+        }
+        return ans;
+    }
+};
+```
+
+## Complexity Analysis
+
+- **Time Complexity:** \(O(N)\) — Traverse the rain array once.
+- **Space Complexity:** \(O(N)\) — Store the assigned umbrella for each day.
