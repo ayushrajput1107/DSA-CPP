@@ -1,0 +1,63 @@
+# [Find Subtree Sizes After Changes](https://leetcode.com/problems/find-subtree-sizes-after-changes/)
+
+## Approach: DFS + Tree + Ancestor Tracking
+
+1. Construct an adjacency list using the parent array to represent the original tree.
+2. Maintain a `prev` array of size 26 to track the nearest ancestor having the same character.
+3. Perform DFS from the root while updating the nearest ancestor for each character.
+4. For every node, restore the previous character occurrence after processing its children. This ensures sibling subtrees are handled independently.
+5. If an ancestor with the same character exists, update the node's parent to that ancestor.
+6. Initially, every node has a subtree size of 1. After processing its children, add its subtree size to its updated parent.
+
+## Code
+
+```cpp
+class Solution {
+public:
+    vector<vector<int>>node;
+    vector<int>prev;
+    vector<int>subtrees;
+
+    void dfs(string&s,int curr_index,vector<int>&parent){
+        char ch = s[curr_index];
+        int prev_index = prev[ch - 'a'];
+
+        prev[ch - 'a'] = curr_index;
+
+        for(const int&child : node[curr_index])
+            dfs(s,child,parent);
+
+        prev[ch - 'a'] = prev_index;
+
+        if(curr_index != 0){
+            int newParent = parent[curr_index];
+
+            if(prev_index != -1)
+                newParent = prev_index;
+
+            parent[curr_index] = newParent;
+            subtrees[newParent] += subtrees[curr_index];
+        }
+    }
+
+    vector<int> findSubtreeSizes(vector<int>& parent, string s) {
+        int n = parent.size();
+
+        node.assign(n,{});
+        prev.assign(26,-1);
+        subtrees.assign(n,1);
+
+        for(int i=1;i<n;i++)
+            node[parent[i]].push_back(i);
+
+        dfs(s,0,parent);
+
+        return subtrees;
+    }
+};
+```
+
+## Complexity Analysis
+
+- **Time Complexity:** \(O(N)\) — Each node is visited exactly once.
+- **Space Complexity:** \(O(N)\) — Adjacency list, subtree sizes, and recursion stack.
