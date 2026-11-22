@@ -1,0 +1,41 @@
+# Count Dominant Elements
+
+**Problem:** [LeetCode - Count Dominant Elements](https://leetcode.com/problems/count-dominant-elements/)
+
+## Approach: Neighbor Comparison
+
+- Traverse the array and check each element.
+- For middle elements, calculate the average of its immediate left and right neighbors.
+- If the current element is greater than or equal to the average, increment the count.
+- For the first and last elements, compare them with their only adjacent element.
+- Return the total count.
+
+## Code
+
+```cpp
+class Solution {
+public:
+    int countDominantElements(vector<int>& nums) {
+        int count = 0;
+        int n = nums.size();
+
+        if(n == 1) return 1;
+
+        for(int i = 0; i < n; i++) {
+            if(i != 0 && i != n-1) {
+                double pivot = (nums[i-1] + nums[i+1]) / 2.0;
+                if(nums[i] >= pivot) count++;
+            }
+            else if(i == 0 && nums[i+1] <= nums[i]) count++;
+            else if(i == n-1 && nums[i-1] <= nums[i]) count++;
+        }
+
+        return count;
+    }
+};
+```
+
+## Complexity Analysis
+
+- **Time Complexity:** O(n) — Each element is visited exactly once.
+- **Space Complexity:** O(1) — No extra space is used.
