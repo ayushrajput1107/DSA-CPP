@@ -1,0 +1,36 @@
+# Check if All A's Appears Before All B's
+
+**Problem:** [LeetCode - Check if All A's Appears Before All B's](https://leetcode.com/problems/check-if-all-as-appears-before-all-bs/)
+
+## Approach: Track Last Occurrences
+
+- Maintain two variables, `last_a` and `last_b`, to store the last occurrence of `'a'` and the first occurrence of `'b'` respectively.
+- Traverse the string from both ends.
+- If either character is absent, return `true`.
+- Otherwise, check whether the first occurrence of `'b'` comes after the last occurrence of `'a'`.
+
+## Code
+
+```cpp
+class Solution {
+public:
+    bool checkString(string s) {
+        int last_a = -1, last_b = -1;
+        int n = s.length();
+
+        for(int i = 0; i < n; i++) {
+            s[i] == 'a' ? last_a = i : last_a;
+            s[n-i-1] == 'b' ? last_b = n-i-1 : last_b;
+        }
+
+        if(last_a == -1 || last_b == -1) return true;
+
+        return last_b > last_a;
+    }
+};
+```
+
+## Complexity Analysis
+
+- **Time Complexity:** O(n) — Single traversal of the string.
+- **Space Complexity:** O(1) — Only two variables are used.
