@@ -1,0 +1,69 @@
+# Earliest Signal Activation Times
+
+**Problem:** [LeetCode - Earliest Signal Activation Times](https://leetcode.com/problems/earliest-signal-activation-times/)
+
+## Approach: Modified Dijkstra's Algorithm
+
+- Build an adjacency list to represent the directed weighted graph.
+- Maintain a min-heap to process signal propagation events in increasing order of activation time.
+- Start signal propagation from node `0` with activation time `0`.
+- Maintain a separate `unordered_set` for each node to track its unique incoming nodes and avoid duplicate signals from the same source.
+- Whenever a node receives a new signal, increment its signal count.
+- Once the received signal count reaches `requiredSignals[v]`, activate the node at the current signal arrival time.
+- After activation, propagate signals to its neighboring nodes by adding the corresponding edge delays.
+- Nodes that never receive enough signals retain their activation time as `-1`.
+
+## Code
+
+```cpp
+class Solution {
+public:
+    vector<long long> earliestActivationTimes(
+        int n, vector<vector<int>>& edges, vector<int>& requiredSignals
+    ) {
+        vector<vector<pair<int,int>>> adj(n);
+        vector<long long> ans(n, -1);
+        vector<int> count(n, 0);
+
+        for(auto &e : edges)
+            adj[e[0]].push_back({e[1], e[2]});
+
+        vector<unordered_set<int>> seen(n);
+
+        using T = tuple<long long, int, int>;
+        priority_queue<T, vector<T>, greater<T>> pq;
+
+        ans[0] = 0;
+
+        for(auto &[v, d] : adj[0])
+            pq.push({d, 0, v});
+
+        while(!pq.empty()) {
+            auto [time, u, v] = pq.top();
+            pq.pop();
+
+            if(seen[v].count(u)) continue;
+
+            seen[v].insert(u);
+            count[v]++;
+
+            if(ans[v] == -1 && count[v] >= requiredSignals[v]) {
+                ans[v] = time;
+
+                for(auto &[next, delay] : adj[v]) {
+                    pq.push({time + delay, v, next});
+                }
+            }
+        }
+
+        return ans;
+    }
+};
+```
+
+## Complexity Analysis
+
+Let `n` be the number of nodes and `m` be the number of edges.
+
+- **Time Complexity:** Approximately O((n + m) log m + m) with heap operations and incoming-edge tracking.
+- **Space Complexity:** O(n + m) for the adjacency list, priority queue, answer array, and visited sets.
