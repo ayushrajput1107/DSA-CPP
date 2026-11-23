@@ -1,0 +1,55 @@
+# 958. Check Completeness of a Binary Tree
+
+**Problem Link:** [Check Completeness of a Binary Tree](https://leetcode.com/problems/check-completeness-of-a-binary-tree/)
+
+## Approach: Level Order Traversal (BFS)
+
+- Use a queue to perform level-order traversal.
+- Maintain a boolean variable `found` to track whether a NULL node has been encountered.
+- Once a NULL node is found, set `found = true`.
+- If any non-NULL node appears after that, the tree is not complete.
+- If the traversal finishes without violating this condition, the tree is complete.
+
+## Code
+
+```cpp
+class Solution {
+public:
+    bool isCompleteTree(TreeNode* root) {
+        if(!root)return true;
+
+        queue<TreeNode*>q;
+        q.push(root);
+
+        bool found = false;
+
+        while(!q.empty()){
+            TreeNode* node = q.front();
+            q.pop();
+
+            if(!node){
+                found = true;
+                continue;
+            }
+
+            if(found)return false;
+
+            q.push(node->left);
+            q.push(node->right);
+        }
+
+        return true;
+    }
+};
+```
+
+## Complexity Analysis
+
+- **Time Complexity:** O(N) — Each node is processed once.
+- **Space Complexity:** O(N) — Queue stores nodes during BFS.
+
+## Key Observation
+
+In a complete binary tree, all levels except possibly the last level must be completely filled, and the last level must be filled from left to right without any gaps.
+
+Once a NULL position is encountered during level-order traversal, no further non-NULL node should exist.
