@@ -1,0 +1,51 @@
+# 1352. Product of the Last K Numbers
+
+**Problem Link:** [Product of the Last K Numbers](https://leetcode.com/problems/product-of-the-last-k-numbers/)
+
+## Approach: Prefix Array
+
+- Maintain a vector `prefix` to store the added numbers.
+- Whenever `add(num)` is called, insert the number into the vector.
+- For `getProduct(k)`, calculate the starting index as `n - k`.
+- Traverse the last `k` elements and multiply them.
+- If the product becomes `0`, return `0` immediately.
+
+## Code
+
+```cpp
+class ProductOfNumbers {
+public:
+    vector<int> prefix;
+
+    ProductOfNumbers() {
+        prefix.clear();
+    }
+
+    void add(int num) {
+        prefix.push_back(num);
+    }
+
+    int getProduct(int k) {
+        int n = prefix.size();
+        int pivot = n - k;
+        int p = 1;
+
+        for(int i = pivot; i < n; i++) {
+            p *= prefix[i];
+            if(p == 0) return 0;
+        }
+
+        return p;
+    }
+};
+```
+
+## Complexity Analysis
+
+- **add(num):** O(1)
+- **getProduct(k):** O(k)
+- **Space Complexity:** O(n), where n is the total number of added elements.
+
+## Key Observation
+
+The solution directly multiplies the last `k` elements whenever a query is made. A more optimized approach can use prefix products to achieve O(1) query time.
