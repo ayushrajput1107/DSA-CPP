@@ -1,0 +1,52 @@
+# Maximum Subarray With Equal Products
+
+**Problem:** [Maximum Subarray With Equal Products](https://leetcode.com/problems/maximum-subarray-with-equal-products/)
+
+## Approach: Brute Force + GCD + LCM
+
+- Consider every possible starting index `i`.
+- Maintain three variables:
+  - `g` = GCD of the current subarray.
+  - `l` = LCM of the current subarray.
+  - `p` = Product of the current subarray.
+- Extend the subarray by iterating through `j`.
+- Update GCD, LCM and product at every step.
+- If `p > g * l`, break because extending the subarray cannot make the product smaller.
+- If `p == g * l`, update the maximum length.
+
+## Code
+
+```cpp
+class Solution {
+public:
+    int maxLength(vector<int>& nums) {
+        int max_len = 0;
+        int n = nums.size();
+
+        for(int i = 0; i < n; i++) {
+            int g = nums[i];
+            int l = nums[i];
+            long long p = nums[i];
+
+            for(int j = i + 1; j < n; j++) {
+                g = gcd(g, nums[j]);
+                l = lcm(l, nums[j]);
+
+                if(p > g * l) break;
+
+                p = p * nums[j];
+
+                if(p == (g * l))
+                    max_len = max(max_len, j - i + 1);
+            }
+        }
+
+        return max_len;
+    }
+};
+```
+
+## Complexity Analysis
+
+- **Time Complexity:** O(n² × log M), where M is the maximum element.
+- **Space Complexity:** O(1), excluding auxiliary space used internally by library functions.
