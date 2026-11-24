@@ -1,0 +1,51 @@
+# Longest ZigZag Path in a Binary Tree
+
+**Problem:** [Longest ZigZag Path in a Binary Tree](https://leetcode.com/problems/longest-zigzag-path-in-a-binary-tree/)
+
+## Approach: DFS (Depth First Search)
+
+- Use DFS to explore both left and right directions.
+- Maintain `steps` to store the current ZigZag path length.
+- Use `isRight` to determine the direction of the previous move.
+- If the previous move was right, move left and increment `steps`.
+- If the previous move was left, move right and increment `steps`.
+- For the opposite child, reset `steps` to 1 because a new ZigZag path starts there.
+- Update the global answer at every node.
+
+## Code
+
+```cpp
+class Solution {
+public:
+    int ans = 0;
+
+    void solve(TreeNode* root, int steps, bool isRight) {
+        if(!root) return;
+
+        ans = max(ans, steps);
+
+        if(isRight) {
+            solve(root->right, steps + 1, false);
+            solve(root->left, 1, true);
+        }
+        else {
+            solve(root->left, steps + 1, true);
+            solve(root->right, 1, false);
+        }
+    }
+
+    int longestZigZag(TreeNode* root) {
+        ans = 0;
+        solve(root, 0, true);
+        solve(root, 0, false);
+
+        return ans;
+    }
+};
+```
+
+## Complexity Analysis
+
+- **Time Complexity:** O(N), where N is the number of nodes. Each node is visited a constant number of times.
+- **Space Complexity:** O(H), where H is the height of the tree, due to the recursion stack.
+
