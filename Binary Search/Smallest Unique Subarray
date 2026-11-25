@@ -1,0 +1,102 @@
+# Smallest Unique Subarray
+
+[LeetCode - Smallest Unique Subarray](https://leetcode.com/problems/smallest-unique-subarray/)
+
+## Approach: Binary Search + Rolling Hash
+
+1. **Binary Search:** Binary search on the possible subarray lengths to find the smallest length satisfying the required condition.
+2. **Rolling Hash:** Use polynomial rolling hash to calculate the hash of every subarray of a fixed length efficiently.
+3. **Frequency Map:** Store the frequency of each hash in an unordered map.
+4. **Check Uniqueness:** If any subarray hash occurs exactly once, return `true`; otherwise, return `false`.
+5. **Optimization:** Precompute the required power using fast exponentiation to calculate the rolling hash efficiently.
+
+## Code
+
+```cpp
+class Solution {
+public:
+    typedef long long ll;
+    const int MOD = 1e9 + 7;
+
+    ll findPower(ll a, ll base) {
+        if(base == 0) return 1;
+
+        ll half = findPower(a, base / 2);
+        ll result = (half * half) % MOD;
+
+        if(base % 2 == 1)
+            result = (result * a) % MOD;
+
+        return result;
+    }
+
+    bool isPresent(vector<int>& nums, int size, int base) {
+        int n = nums.size();
+        ll hash = 0;
+
+        unordered_map<ll, int> mp;
+
+        ll p = findPower(base, size - 1);
+
+        int i = 0, j = 0;
+
+        while(j < n) {
+            hash = (hash * base + nums[j]) % MOD;
+
+            if(j - i + 1 < size) {
+                j++;
+            }
+            else {
+                mp[hash]++;
+
+                hash = (hash - (p * nums[i]) % MOD + MOD) % MOD;
+
+                i++;
+                j++;
+            }
+        }
+
+        for(auto &it : mp) {
+            if(it.second == 1)
+                return true;
+        }
+
+        return false;
+    }
+
+    int smallestUniqueSubarray(vector<int>& nums) {
+        int n = nums.size();
+        int result = 0;
+
+        int base = *max_element(begin(nums), end(nums)) + 1;
+
+        int low = 1, high = n;
+
+        while(low <= high) {
+            int mid = low + (high - low) / 2;
+
+            if(isPresent(nums, mid, base)) {
+                result = mid;
+                high = mid - 1;
+            }
+            else {
+                low = mid + 1;
+            }
+        }
+
+        return result;
+    }
+};
+```
+
+## Complexity Analysis
+
+Let \(N\) be the size of the input array.
+
+- **Rolling Hash:** \(O(N)\) per binary search iteration.
+- **Fast Exponentiation:** \(O(\log N)\) per iteration.
+- **Binary Search:** \(O(\log N)\) iterations.
+- **Overall Time Complexity:** \(O(N \log N + \log^2 N)\), assuming average-case \(O(1)\) unordered map operations.
+- **Space Complexity:** \(O(N)\) for the frequency map.
+
+**Note:** This implementation uses modular hashing, so hash collisions are theoretically possible. Also, the binary-search approach requires a monotonicity proof for the problem's uniqueness condition; it should be verified before treating this as a guaranteed correct solution.
