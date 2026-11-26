@@ -1,0 +1,46 @@
+# Stone Removal Game
+
+**LeetCode Problem:** [Stone Removal Game](https://leetcode.com/problems/stone-removal-game/)
+
+## Approach: Simulation
+
+- Alice starts the game and initially needs to remove 10 stones.
+- After every turn, the required number of stones decreases by 1.
+- Each player removes the minimum of the required stones and the remaining stones.
+- If the remaining stones are fewer than the required number, the current player cannot make a valid move, and the other player wins.
+- Alternate turns between Alice and Bob until one player cannot make a move.
+
+## Code
+
+```cpp
+class Solution {
+public:
+    bool canAliceWin(int n) {
+        bool Alice = true;
+        int pivot = 10;
+
+        while(true) {
+            if(n < pivot) return !Alice;
+
+            int mini = min(pivot, n);
+            n = n - mini;
+
+            if(Alice) Alice = false;
+            else Alice = true;
+
+            pivot--;
+        }
+
+        return true;
+    }
+};
+```
+
+## Complexity Analysis
+
+- **Time Complexity:** O(1) — At most 10 iterations are performed.
+- **Space Complexity:** O(1) — Only a constant amount of extra space is used.
+
+## Key Learning
+
+This problem can be solved using simple simulation by tracking the number of remaining stones, the required stones per turn, and the current player.
