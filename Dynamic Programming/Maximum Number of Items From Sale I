@@ -1,0 +1,87 @@
+# Maximum Number of Items From Sale I
+
+**Problem:** [LeetCode - Maximum Number of Items From Sale I](https://leetcode.com/problems/maximum-number-of-items-from-sale-i/)
+
+## Approach: Recursion + Memoization (DP)
+
+- Use recursion to explore the possible choices for each item.
+- At every index, consider three possibilities:
+  1. **Take the current item once:** Add its contribution along with the remaining recursive result.
+  2. **Take the current item again:** Reduce the budget and stay at the same index.
+  3. **Skip the current item:** Move to the next index without changing the budget.
+- Use an `unordered_map` to precompute the number of other items whose values are divisible by the current item's value.
+- Apply memoization using `dp[index][budget]` to avoid recalculating states.
+
+## Code
+
+```cpp
+class Solution {
+public:
+    int dp[1001][1501];
+    unordered_map<int,int> mp;
+
+    int solve(vector<vector<int>>& items, int budget, int index) {
+        if(index >= items.size()) return 0;
+
+        if(dp[index][budget] != -1)
+            return dp[index][budget];
+
+        int max_count = 0;
+        int pivot = items[index][1];
+
+        if(pivot <= budget) {
+            int c2 = 1 + mp[items[index][0]] +
+                     solve(items, budget - pivot, index + 1);
+
+            int c1 = 1 +
+                     solve(items, budget - pivot, index);
+
+            max_count = max(max_count, max(c1, c2));
+        }
+
+        int c3 = solve(items, budget, index + 1);
+
+        return dp[index][budget] = max(max_count, c3);
+    }
+
+    int maximumSaleItems(vector<vector<int>>& items, int budget) {
+        memset(dp, -1, sizeof(dp));
+
+        int n = items.size();
+
+        for(int i = 0; i < n; i++) {
+            int pivot = items[i][0];
+
+            if(mp.count(pivot)) continue;
+
+            mp[pivot] = 0;
+
+            for(int j = 0; j < n; j++) {
+                if(i == j) continue;
+
+                int num = items[j][0];
+
+                if(num % pivot == 0)
+                    mp[pivot]++;
+            }
+        }
+
+        return solve(items, budget, 0);
+    }
+};
+```
+
+## Complexity Analysis
+
+Let:
+- \(N\) = Number of items
+- \(B\) = Given budget
+
+| Operation | Complexity |
+|---|---|
+| Precomputing divisibility counts | \(O(N^2)\) |
+| DP states | \(O(N \times B)\) |
+| Each DP state | \(O(1)\) |
+
+- **Time Complexity:** \(O(N^2 + N \times B)\)
+- **Space Complexity:** \(O(N \times B + N)\), including DP and recursion stack (excluding the input array).
