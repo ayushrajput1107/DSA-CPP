@@ -1,0 +1,71 @@
+# 222. Count Complete Tree Nodes
+
+**Problem Link:** [LeetCode - Count Complete Tree Nodes](https://leetcode.com/problems/count-complete-tree-nodes/)
+
+## Approach: Binary Tree + Height Calculation
+
+1. If the root is `NULL`, return `0`.
+2. Calculate the leftmost height and rightmost height of the tree.
+3. If both heights are equal, the tree is a perfect binary tree.
+   - Number of nodes in a perfect binary tree = \(2^h - 1\).
+4. Otherwise, recursively count the nodes in the left and right subtrees and add `1` for the root.
+
+## Code (C++)
+
+```cpp
+class Solution {
+public:
+
+    int leftheight(TreeNode* root) {
+        TreeNode* node = root;
+        int height = 0;
+
+        while (node) {
+            height++;
+            node = node->left;
+        }
+
+        return height;
+    }
+
+    int rightheight(TreeNode* root) {
+        TreeNode* node = root;
+        int height = 0;
+
+        while (node) {
+            height++;
+            node = node->right;
+        }
+
+        return height;
+    }
+
+    int countNodes(TreeNode* root) {
+        if (!root) return 0;
+
+        int lh = leftheight(root);
+        int rh = rightheight(root);
+
+        if (lh == rh)
+            return pow(2, lh) - 1;
+
+        return countNodes(root->left) +
+               countNodes(root->right) + 1;
+    }
+};
+```
+
+## Complexity Analysis
+
+- **Time Complexity:** O(log² N) — Calculating heights takes O(log N), and the recursion visits at most O(log N) levels.
+- **Space Complexity:** O(log N) — Recursive call stack in a complete binary tree.
+
+## Key Concept
+
+A complete binary tree has all levels completely filled except possibly the last level, which is filled from left to right.
+
+If the leftmost and rightmost heights are equal, the tree is perfect, allowing us to calculate its node count directly using:
+
+\[
+\boxed{2^h-1}
+\]
