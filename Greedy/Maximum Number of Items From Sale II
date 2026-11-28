@@ -1,0 +1,82 @@
+# Maximum Number of Items From Sale II
+
+## Approach: Sieve + Greedy + Sorting
+
+1. Find the minimum price among all items.
+2. Use a frequency array to count how many items have each divisor value.
+3. Precompute `factorSum[i]`, representing the number of items whose first attribute is divisible by `i`.
+   - This is done using a sieve-like approach.
+4. For every item, calculate the number of other items whose first attribute is divisible by its first attribute.
+5. If the count is positive and its price is less than twice the minimum price, add it to the choices.
+6. Sort the choices by price in ascending order.
+7. Greedily purchase the available pairs of items using the budget.
+8. Finally, use the remaining budget to purchase individual items at the minimum price.
+
+## Code (C++)
+
+```cpp
+class Solution {
+public:
+    int maximumSaleItems(vector<vector<int>>& items, int budget) {
+        int n = items.size();
+
+        int mini_price = INT_MAX;
+
+        vector<int> factor(n + 1, 0);
+        vector<int> factorSum(n + 1, 0);
+
+        vector<pair<int, int>> choices;
+
+        for (const auto& it : items) {
+            factor[it[0]]++;
+            mini_price = min(mini_price, it[1]);
+        }
+
+        for (int i = 1; i <= n; i++) {
+            for (int j = i; j <= n; j += i) {
+                factorSum[i] += factor[j];
+            }
+        }
+
+        for (const auto& vec : items) {
+            int count = factorSum[vec[0]] - 1;
+
+            if (count > 0 && vec[1] < 2LL * mini_price) {
+                choices.push_back({vec[1], count});
+            }
+        }
+
+        sort(begin(choices), end(choices));
+
+        int ans = 0;
+
+        for (const auto& it : choices) {
+            int price = it.first;
+            int Total = it.second;
+
+            int mini = min(Total, budget / price);
+
+            budget -= (price * mini);
+            ans += (2 * mini);
+        }
+
+        ans += (budget / mini_price);
+
+        return ans;
+    }
+};
+```
+
+## Complexity Analysis
+
+Let `N` be the number of items.
+
+- **Frequency Array:** O(N)
+- **Sieve-like Factor Precomputation:** O(N log N)
+- **Generating Choices:** O(N)
+- **Sorting Choices:** O(N log N)
+- **Greedy Selection:** O(N)
+
+**Overall Time Complexity:** O(N log N)
+
+**Space Complexity:** O(N) for the frequency array, factor sum array, and choices.
