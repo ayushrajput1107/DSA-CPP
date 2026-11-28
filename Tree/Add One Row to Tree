@@ -1,0 +1,57 @@
+# 623. Add One Row to Tree
+
+**Problem Link:** [LeetCode - Add One Row to Tree](https://leetcode.com/problems/add-one-row-to-tree/)
+
+## Approach: Recursive DFS
+
+1. If the required depth is `1`, create a new root node with the given value and attach the original tree as its left child.
+2. Otherwise, use recursive DFS to traverse the tree.
+3. When `curr_depth == depth - 1`, insert two new nodes:
+   - Attach the new node as the left child and connect its left pointer to the original left subtree.
+   - Attach the new node as the right child and connect its right pointer to the original right subtree.
+4. Continue the recursion until the required depth is reached.
+
+## Code (C++)
+
+```cpp
+class Solution {
+public:
+
+    void solve(TreeNode* root, int val, int depth, int curr_depth) {
+        if (!root) return;
+
+        if (curr_depth == depth) {
+            TreeNode* node1 = new TreeNode(val);
+            TreeNode* node2 = new TreeNode(val);
+
+            TreeNode* l = root->left;
+            TreeNode* r = root->right;
+
+            root->left = node1;
+            root->right = node2;
+
+            if (l) node1->left = l;
+            if (r) node2->right = r;
+        }
+
+        solve(root->left, val, depth, curr_depth + 1);
+        solve(root->right, val, depth, curr_depth + 1);
+    }
+
+    TreeNode* addOneRow(TreeNode* root, int val, int depth) {
+        if (depth == 1) {
+            TreeNode* node = new TreeNode(val);
+            node->left = root;
+            return node;
+        }
+
+        solve(root, val, depth - 1, 1);
+        return root;
+    }
+};
+```
+
+## Complexity Analysis
+
+- **Time Complexity:** O(N) — In the worst case, we visit every node in the tree.
+- **Space Complexity:** O(H) — Recursive call stack, where H is the height of the tree.
